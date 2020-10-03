@@ -1,0 +1,21 @@
+
+# # PSR ID, Name, ReportingBoss, Yearmonth, TargetValues, TargetQty, Brand
+
+select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss', B.SKUID ,
+ShortName as SKUName,  B.Brand as Brand, TargetVal , TargetQty
+from
+
+(select SRID, SRSNAME, ASENAME  from Hierarchy_EMP) as A
+left join
+
+(select SRID, TargetDistributionItemBySR.SKUID as SKUID , ShortName,  count(Hierarchy_SKU.BrandID) as Brand,
+ sum(TargetValue) as [TargetVal] , sum(TargetQty) as [TargetQty]
+from TargetDistributionItemBySR
+
+join Hierarchy_SKU
+on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
+group by SRID, TargetDistributionItemBySR.SKUID, ShortName) as B
+
+
+on A.SRID = B.SRID
+where A.SRID = '22'
