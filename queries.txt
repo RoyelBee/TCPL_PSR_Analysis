@@ -19,3 +19,25 @@ group by SRID, TargetDistributionItemBySR.SKUID, ShortName) as B
 
 on A.SRID = B.SRID
 where A.SRID = '22'
+
+
+
+# # --------- SR brand wise sales ---------------------------------
+
+select a.srid,b.SRNAME,sum(Quantity*InvoicePrice) as sale,brandname from
+(select item.*,SRID from
+(select * from SalesInvoices where InvoiceDate>='1 aug 2020') as Sales
+inner join
+(
+select * from SalesInvoiceItem) as item
+on sales.invoiceid=item.invoiceid) as a
+
+left join
+(select * from Hierarchy_SKU) as SKu
+on a.skuid=sku.skuid
+left join
+(select * from Hierarchy_Emp) as b
+on a.srid=b.srid
+where a.srid=22
+group by b.SRNAME,brandname,a.srid
+
