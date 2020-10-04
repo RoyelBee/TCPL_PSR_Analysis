@@ -41,3 +41,82 @@ on a.srid=b.srid
 where a.srid=22
 group by b.SRNAME,brandname,a.srid
 
+
+
+------------
+
+
+select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',-- B.SKUID ,
+--ShortName as SKUName
+B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
+from
+
+(select SRID, SRSNAME, ASENAME  from Hierarchy_EMP) as A
+left join
+
+(select BrandName,SRID,
+ --TargetDistributionItemBySR.SKUID as SKUID , ShortName,
+  count(distinct Hierarchy_SKU.BrandID) as Brand,
+ sum(TargetValue) as [TargetVal] , sum(TargetQty) as [TargetQty]
+from TargetDistributionItemBySR
+
+
+left join Hierarchy_SKU
+on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
+where [TargetQty] >0 and YearMonth=202009
+group by SRID, ShortName,BrandName
+ --TargetDistributionItemBySR.SKUID,
+) as B
+
+
+on A.SRID = B.SRID
+where A.SRID = '22'
+group by B.Brand, A.SRID, A.SRSNAME, A.ASENAME, BrandName
+
+
+
+---------------------- Final Table --------------------------------------------
+
+
+
+select t1.SRID,t1.SRName,t1.ReportingBoss, t1.Brand, t1.BrandName,t1.TargetVal,t2.SalesVal, t1.TargetQty,t2.SalesQty from
+(select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',-- B.SKUID ,
+--ShortName as SKUName
+B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
+from
+(select SRID, SRSNAME, ASENAME  from Hierarchy_EMP) as A
+left join
+(select BrandName,SRID,
+ --TargetDistributionItemBySR.SKUID as SKUID , ShortName,
+  count(distinct Hierarchy_SKU.BrandID) as Brand,
+ sum(TargetValue) as [TargetVal] , sum(TargetQty) as [TargetQty]
+from TargetDistributionItemBySR
+left join Hierarchy_SKU
+on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
+where [TargetQty] >0 and YearMonth=202009
+group by SRID, ShortName,BrandName
+) as B
+on A.SRID = B.SRID
+group by B.Brand, A.SRID, A.SRSNAME, A.ASENAME, BrandName )as T1
+left join
+(
+select a.srid,b.SRNAME,ltrim(rtrim(brandname)) as BrandName,
+SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal from
+(select item.*,SRID from
+(select * from SalesInvoices where InvoiceDate>='1 aug 2020') as Sales
+inner join
+(
+select * from SalesInvoiceItem) as item
+on sales.invoiceid=item.invoiceid) as a
+
+left join
+(select * from Hierarchy_SKU) as SKu
+on a.skuid=sku.skuid
+left join
+(select * from Hierarchy_Emp) as b
+on a.srid=b.srid
+group by a.srid,b.SRNAME,ltrim(rtrim(brandname)) ) as T2
+on t1.SRID=t2.SRID
+and t1.BrandName=t2.BrandName
+where T2.SRID = 22
+
