@@ -120,3 +120,25 @@ on t1.SRID=t2.SRID
 and t1.BrandName=t2.BrandName
 where T2.SRID = 22
 
+
+
+# # # ----------------  -  Target value and Quantity -------------------------
+select  sum(targetvalue) as TargetVal, sum(targetqty) as TargetQty
+from TargetDistributionItemBySR
+where srid = '22'and yearmonth = 202009
+
+
+# # # -----------------MTD  Sales Quantity and Values --------------------------
+select right(left(left(InvoiceDate, 10),6),2) Date, SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal from
+(select item.*,SRID, InvoiceDate from
+(select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
+) as Sales
+inner join
+(select invoiceid,Quantity, InvoicePrice from SalesInvoiceItem) as item
+on sales.invoiceid=item.invoiceid where SRID=22) as fwe
+group by left(InvoiceDate, 10)
+
+# # ----------- Cumulative Target and sales chart ------------------------------
+It could be done from sales and target data
+
