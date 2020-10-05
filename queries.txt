@@ -77,8 +77,6 @@ group by B.Brand, A.SRID, A.SRSNAME, A.ASENAME, BrandName
 
 ---------------------- Final Table --------------------------------------------
 
-
-
 select t1.SRID,t1.SRName,t1.ReportingBoss, t1.Brand, t1.BrandName,t1.TargetVal,t2.SalesVal, t1.TargetQty,t2.SalesQty from
 (select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',-- B.SKUID ,
 --ShortName as SKUName

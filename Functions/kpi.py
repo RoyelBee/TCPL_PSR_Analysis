@@ -16,16 +16,16 @@ conn = db.connect('DRIVER={SQL Server};'
 #                 left join Hierarchy_SKU
 #                 on TargetDistributionItemBySR.SKUID =Hierarchy_SKU.SKUID
 #                 where srid = '22'and yearmonth = 202009 --convert(varchar(6),DATEADD(D,0,GETDATE()),112)
-#                 group by Weight""", conn)
+#                 """, conn)
 #
-# total_val_target = sum(target_df.TargetVal)
-# total_weight_target = sum(target_df.TargetKg)
+# total_val_target = int(target_df.TargetVal)
+# total_weight_target = int(target_df.TargetKg)
 
 
 # # ---------- Total Sales in KG and Values -----------------------------------------
 # # ---------------------------------------------------------------------------------
 
-# total_sales_df = pd.read_sql_query(""" select (SUM(Quantity)*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
+# total_sales_df = pd.read_sql_query(""" select SUM(Quantity*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
 #                 (select item.*,SRID, InvoiceDate, Weight from
 #                 (select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
 #                 and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
@@ -35,24 +35,23 @@ conn = db.connect('DRIVER={SQL Server};'
 #                 on sales.invoiceid=item.invoiceid
 #                 left join Hierarchy_SKU
 #                 on item.SKUID = Hierarchy_SKU.SKUID
-#                 ) as fwe
-#                 group by Weight """, conn)
-
-# total_val_sales = sum(total_sales_df.SalesVal)
-# total_weight_sales = sum(total_sales_df.SalesKg)
+#                 ) as tbl""", conn)
+#
+# total_val_sales = int(total_sales_df.SalesVal)
+# total_weight_sales = int(total_sales_df.SalesKg)
 
 # # ------------------- Total Returns in Kg and Values ----------------------------------
 # # -------------------------------------------------------------------------------------
 
-return_df = pd.read_sql_query(""" select sum(Quantity*InvoicePrice) as ReturnVal , (sum(Quantity)*Weight)/100 as ReturnKg from MarketReturns
-            left join
-            MarketReturnItem
-            on MarketReturns.MarketReturnID = MarketReturnItem.MarketReturnID
-            
-            left join Hierarchy_SKU
-            on MarketReturnItem.SKUID = Hierarchy_SKU.SKUID
-            where SRID=22
-            group by Weight
-            """, conn)
-total_val_return = sum(return_df.ReturnVal)
-total_weight_return = sum(return_df.ReturnKg)
+# return_df = pd.read_sql_query(""" select sum(Quantity*InvoicePrice) as ReturnVal , sum(Quantity*Weight)/100 as ReturnKg from MarketReturns
+#             left join
+#             MarketReturnItem
+#             on MarketReturns.MarketReturnID = MarketReturnItem.MarketReturnID
+#             left join Hierarchy_SKU
+#             on MarketReturnItem.SKUID = Hierarchy_SKU.SKUID
+#             where SRID=22
+#
+#                         """, conn)
+# total_val_return = sum(return_df.ReturnVal)
+# total_weight_return = sum(return_df.ReturnKg)
+
