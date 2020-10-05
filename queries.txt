@@ -152,16 +152,20 @@ group by Weight
 
 
 # # # -----------------MTD  Sales Quantity and Values --------------------------
-select right(left(left(InvoiceDate, 10),6),2) Date, SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal from
+select right(left(left(InvoiceDate, 10),6),2) Date, SUM(Quantity) as SalesQty,SUM(Quantity*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
 (select item.*,SRID, InvoiceDate from
 (select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
 and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
 ) as Sales
 inner join
-(select invoiceid,Quantity, InvoicePrice from SalesInvoiceItem) as item
+(select invoiceid,Quantity, Weight, InvoicePrice from SalesInvoiceItem
+left join Hierarchy_SKU
+on SalesInvoiceItem.SKUID = Hierarchy_SKU.SKUID
+) as item
 on sales.invoiceid=item.invoiceid where SRID=22) as fwe
 group by left(InvoiceDate, 10)
 
+# # ----------------------------------------------------------------------------
 # # ----------- Cumulative Target and sales chart ------------------------------
 It could be done from sales and target data
 
@@ -177,10 +181,18 @@ where SRID=22
 group by Weight
 
 
+# # ----------- SKU ID wise SR Sales ---------------------------------
+select item.skuid, item.ShortName as SKUName, sum(Quantity*Weight)/1000 as Saleskg, sum(Quantity*InvoicePrice) as SalesValue from
+	(select b.skuid,Quantity, InvoicePrice from
+		(select * from SalesInvoices where SRID=22 and InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+and convert(varchar(10),DATEADD(D,0,GETDATE()),126))as a
+		left join
+		(select * from SalesInvoiceItem) as b
+		on a.InvoiceID=b.InvoiceID) as c
+		left join
+		(select * from Hierarchy_SKU) as item
+		on c.skuid=item.skuid
 
-select sum(Quantity*InvoicePrice) as ReturnVal from MarketReturns
-left join
-MarketReturnItem
-on MarketReturns.MarketReturnID = MarketReturnItem.MarketReturnID
-where SRID=22
-
+where  item.skuid>0
+group by item.skuid, item.ShortName
+order by SalesValue desc
