@@ -1,11 +1,6 @@
 import pyodbc as db
 import pandas as pd
 import matplotlib.pyplot as plt
-
-skf_conn = db.connect('DRIVER={SQL Server};'
-                      'SERVER=137.116.139.217;'
-                      'DATABASE=ARCHIVESKF;'
-                      'UID=sa;PWD=erp@123')
 conn = db.connect('DRIVER={SQL Server};'
                   'SERVER=10.168.2.168;'
                   'DATABASE=TCPL_SECONDARY;'
