@@ -85,22 +85,78 @@ conn = db.connect('DRIVER={SQL Server};'
 # # ---------- Cumulative Charts ---------------------------------------------
 # # --------------------------------------------------------------------------
 
-target = data.cumulativeTarget
-sales = data.cumulativeSalesVal
-
+# target = data.cumulativeTarget
 # sales = data.cumulativeSalesVal
-x = range(1, len(target) + 1, 1)
-xx = range(1, len(sales) + 1, 1)
+#
+# # sales = data.cumulativeSalesVal
+# x = range(1, len(target) + 1, 1)
+# xx = range(1, len(sales) + 1, 1)
+#
+# fig, ax = plt.subplots(figsize=(12.81, 4.8))
+# plt.fill_between(x, target, color="skyblue", alpha=1)
+# plt.plot(xx, sales, color="red", linewidth=5, linestyle="-")
+# plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
+# plt.ylabel('Amount', fontsize='14', color='black', fontweight='bold')
+# # ax.set_ylabel('Amount', fontsize='14', color='black', fontweight='bold')
+# # ax.set_xlabel('Day', fontsize='14', color='black', fontweight='bold')
+# plt.title('01. MTD Target vs Sales in Taka - Cumulative', fontsize=16, fontweight='bold', color='#3e0a75')
+# plt.xticks(np.arange(1, data.days_in_month + 1, 1))
+# plt.legend(['Sales', 'Target'], loc='upper right', fontsize='14')
+# # plt.show()
+# plt.savefig('../Images/target_sales_val.png')
 
-fig, ax = plt.subplots(figsize=(12.81, 4.8))
-plt.fill_between(x, target, color="skyblue", alpha=1)
-plt.plot(xx, sales, color="red", linewidth=5, linestyle="-")
-plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
-plt.ylabel('Amount', fontsize='14', color='black', fontweight='bold')
-# ax.set_ylabel('Amount', fontsize='14', color='black', fontweight='bold')
-# ax.set_xlabel('Day', fontsize='14', color='black', fontweight='bold')
-plt.title('01. MTD Target vs Sales in Taka - Cumulative', fontsize=16, fontweight='bold', color='#3e0a75')
-plt.xticks(np.arange(1, data.days_in_month + 1, 1))
-plt.legend(['Sales', 'Target'], loc='upper right', fontsize='14')
-# plt.show()
-plt.savefig('../Images/target_sales_val.png')
+
+brand_sales_df = pd.read_sql_query(""" select brandname, sum(Quantity*InvoicePrice) as sales from
+                (select item.*,SRID from
+                (select * from SalesInvoices where InvoiceDate>='1 aug 2020') as Sales
+                inner join
+                (
+                select * from SalesInvoiceItem) as item
+                on sales.invoiceid=item.invoiceid) as a
+                
+                left join
+                (select * from Hierarchy_SKU) as SKu
+                on a.skuid=sku.skuid
+                left join
+                (select * from Hierarchy_Emp) as b
+                on a.srid=b.srid
+                where a.srid=22
+                group by brandname""", conn)
+
+brand_name = brand_sales_df.brandname.tolist()
+brand_sales = brand_sales_df.sales.tolist()
+
+width = 0.75
+y_pos = np.arange(len(brand_name))
+
+fig, ax = plt.subplots()
+bars = plt.bar(y_pos, brand_sales, width, align='center', alpha=1)
+
+
+def autolabel(bars):
+    # attach some text labels
+    for rect in bars:
+        height = int(rect.get_height())
+        ax.text(rect.get_x() + rect.get_width() / 2., .995 * height,
+                height, ha='center', va='bottom', fontsize=12,  fontweight='bold')
+
+
+# bars[0].set_color('#2c8e14')
+# bars[1].set_color('#deff00')
+# bars[2].set_color('#ff6500')
+# bars[3].set_color('#f00228')
+
+autolabel(bars)
+
+plt.xticks(y_pos, brand_name, fontsize=12)
+# plt.yticks(fontsize=12)
+# plt.yticks(np.arange(0, maf_kor2 + (.6 * maf_kor2), maf_kor2 / 5), fontsize=12)
+plt.xlabel('Brand Name', color='black', fontsize=14, fontweight='bold')
+plt.ylabel('Amount', color='black', fontsize=14, fontweight='bold')
+plt.title(' Brand Wise Sales', color='#3e0a75', fontweight='bold', fontsize=16)
+plt.tight_layout()
+
+plt.show()
+# plt.savefig('aging_matured_credit.png')
+# plt.close()
+# print('4. Aging Mature Credit Generated')

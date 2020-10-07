@@ -12,102 +12,155 @@ conn = db.connect('DRIVER={SQL Server};'
 
 # # -------- Total value and Weight Target  -----------------------------------
 # # ---------------------------------------------------------------------------
-target_df = pd.read_sql_query(""" select  isnull(sum(targetvalue), 0) as TargetVal,
-                sum((targetqty)*Weight)/1000 as TargetKg
-                from TargetDistributionItemBySR
-                left join Hierarchy_SKU
-                on TargetDistributionItemBySR.SKUID =Hierarchy_SKU.SKUID
-                where srid = '22'and yearmonth = 202009 --convert(varchar(6),DATEADD(D,0,GETDATE()),112)
-                """, conn)
+# target_df = pd.read_sql_query(""" select  isnull(sum(targetvalue), 0) as TargetVal,
+#                 sum((targetqty)*Weight)/1000 as TargetKg
+#                 from TargetDistributionItemBySR
+#                 left join Hierarchy_SKU
+#                 on TargetDistributionItemBySR.SKUID =Hierarchy_SKU.SKUID
+#                 where srid = '22'and yearmonth = 202009 --convert(varchar(6),DATEADD(D,0,GETDATE()),112)
+#                 """, conn)
+#
+# total_val_target = int(target_df.TargetVal)
+# total_weight_target = int(target_df.TargetKg)
+#
+# # ---------- Total Sales in KG and Values -----------------------------------------
+# # ---------------------------------------------------------------------------------
+#
+# total_sales_df = pd.read_sql_query(""" select SUM(Quantity*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
+#                 (select item.*,SRID, InvoiceDate, Weight from
+#                 (select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+#                 and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
+#                 ) as Sales
+#                 inner join
+#                 (select invoiceid,Quantity, InvoicePrice, skuid from SalesInvoiceItem) as item
+#                 on sales.invoiceid=item.invoiceid
+#                 left join Hierarchy_SKU
+#                 on item.SKUID = Hierarchy_SKU.SKUID
+#                 ) as tbl""", conn)
+#
+# total_val_sales = int(total_sales_df.SalesVal)
+# total_weight_sales = int(total_sales_df.SalesKg)
+#
+# # ------------------- Total Returns in Kg and Values ----------------------------------
+# # -------------------------------------------------------------------------------------
+#
+# return_df = pd.read_sql_query(""" select sum(Quantity*InvoicePrice) as ReturnVal , sum(Quantity*Weight)/100 as ReturnKg from MarketReturns
+#             left join
+#             MarketReturnItem
+#             on MarketReturns.MarketReturnID = MarketReturnItem.MarketReturnID
+#             left join Hierarchy_SKU
+#             on MarketReturnItem.SKUID = Hierarchy_SKU.SKUID
+#             where SRID=22
+#
+#                         """, conn)
+# total_val_return = sum(return_df.ReturnVal)
+# total_weight_return = sum(return_df.ReturnKg)
+#
+# sales_achievement = (total_val_sales / total_val_target) * 100
+# weight_achievement = (total_weight_sales / total_weight_target) * 100
+#
+# # # -------- Cumulative Target  and sales --------------------------------------
+# # # ----------------------------------------------------------------------------
+# date = datetime.datetime.now()
+# current_day = date.strftime("%d")
+# days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m"))))
+#
+# cu = []
+# i = 0
+# for i in range(days_in_month):
+#     val = int(total_val_target / days_in_month)
+#     cu.append(val)
+#
+#
+# def Cumulative(val):
+#     new = []
+#     cumsum = 0
+#     for element in val:
+#         cumsum += element
+#         new.append(cumsum)
+#     return new
+#
+#
+# cumulativeTarget = Cumulative(cu)
+# cumulativeTarget = cumulativeTarget[:int(days_in_month)]
+#
+#
+# # # ----------- Sales ----------------------------------------------------
+#
+# day_wise_sales_df = pd.read_sql_query("""select right(left(left(InvoiceDate, 10),6),2) Date, SUM(Quantity) as SalesQty,SUM(Quantity*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
+#                     (select item.*,SRID, InvoiceDate from
+#                     (select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+#                     and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
+#                     ) as Sales
+#                     inner join
+#                     (select invoiceid,Quantity, Weight, InvoicePrice from SalesInvoiceItem
+#                     left join Hierarchy_SKU
+#                     on SalesInvoiceItem.SKUID = Hierarchy_SKU.SKUID
+#                     ) as item
+#                     on sales.invoiceid=item.invoiceid where SRID=22) as fwe
+#                     group by left(InvoiceDate, 10) """, conn)
+#
+# days = day_wise_sales_df.Date.tolist()
+# day_salesVal = day_wise_sales_df.SalesVal.tolist()
+# day_salesKg = day_wise_sales_df.SalesKg.tolist()
+#
+#
+# cumulativeWeight = Cumulative(day_salesKg)
+# cumulativeWeight = cumulativeTarget[:int(current_day)]
+#
+#
+# cumulativeSalesVal = Cumulative(day_salesVal)
+# cumulativeSalesVal = cumulativeSalesVal[:int(current_day)]
 
-total_val_target = int(target_df.TargetVal)
-total_weight_target = int(target_df.TargetKg)
 
-# ---------- Total Sales in KG and Values -----------------------------------------
-# ---------------------------------------------------------------------------------
+# # ------------ SR Info with brand wise sales and target -------------------------
+# # -------------------------------------------------------------------------------
 
-total_sales_df = pd.read_sql_query(""" select SUM(Quantity*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
-                (select item.*,SRID, InvoiceDate, Weight from
-                (select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-                and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
-                ) as Sales
-                inner join
-                (select invoiceid,Quantity, InvoicePrice, skuid from SalesInvoiceItem) as item
-                on sales.invoiceid=item.invoiceid
-                left join Hierarchy_SKU
-                on item.SKUID = Hierarchy_SKU.SKUID
-                ) as tbl""", conn)
-
-total_val_sales = int(total_sales_df.SalesVal)
-total_weight_sales = int(total_sales_df.SalesKg)
-
-# ------------------- Total Returns in Kg and Values ----------------------------------
-# -------------------------------------------------------------------------------------
-
-return_df = pd.read_sql_query(""" select sum(Quantity*InvoicePrice) as ReturnVal , sum(Quantity*Weight)/100 as ReturnKg from MarketReturns
+profile_df = pd.read_sql_query(""" select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
+            t1.BrandName,t1.TargetVal,t2.SalesVal, t1.TargetQty,t2.SalesQty from
+            (select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',-- B.SKUID ,
+            --ShortName as SKUName
+            B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
+            from
+            (select SRID, SRSNAME, ASENAME  from Hierarchy_EMP) as A
             left join
-            MarketReturnItem
-            on MarketReturns.MarketReturnID = MarketReturnItem.MarketReturnID
+            (select BrandName,SRID,
+             --TargetDistributionItemBySR.SKUID as SKUID , ShortName,
+              count(distinct Hierarchy_SKU.BrandID) as Brand,
+             sum(TargetValue) as [TargetVal] , sum(TargetQty) as [TargetQty]
+            from TargetDistributionItemBySR
             left join Hierarchy_SKU
-            on MarketReturnItem.SKUID = Hierarchy_SKU.SKUID
-            where SRID=22
+            on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
+            where [TargetQty] >0 and YearMonth=202009
+            group by SRID, ShortName,BrandName
+            ) as B
+            on A.SRID = B.SRID
+            group by B.Brand, A.SRID, A.SRSNAME, A.ASENAME, BrandName )as T1
+            left join
+            (
+            select a.srid,b.SRNAME,ltrim(rtrim(brandname)) as BrandName,b.SRDESIGNATION,
+            SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal from
+            (select item.*,SRID from
+            (select * from SalesInvoices where InvoiceDate>='1 aug 2020') as Sales
+            inner join
+            (
+            select * from SalesInvoiceItem) as item
+            on sales.invoiceid=item.invoiceid) as a
+            
+            left join
+            (select * from Hierarchy_SKU) as SKu
+            on a.skuid=sku.skuid
+            left join
+            (select * from Hierarchy_Emp) as b
+            on a.srid=b.srid
+            group by a.srid,b.SRNAME,ltrim(rtrim(brandname)) , b.SRDESIGNATION) as T2
+            on t1.SRID=t2.SRID
+            and t1.BrandName=t2.BrandName
+            where T2.SRID = 22
+                         """, conn)
 
-                        """, conn)
-total_val_return = sum(return_df.ReturnVal)
-total_weight_return = sum(return_df.ReturnKg)
+sr_name = profile_df.SRName.loc[0]
+reporting_boss = profile_df.ReportingBoss.loc[0]
+total_brand = profile_df.Brand.count()
+designation = profile_df.SRDESIGNATION.loc[0]
 
-sales_achievement = (total_val_sales / total_val_target) * 100
-weight_achievement = (total_weight_sales / total_weight_target) * 100
-
-# # -------- Cumulative Target  and sales --------------------------------------
-# # ----------------------------------------------------------------------------
-date = datetime.datetime.now()
-current_day = date.strftime("%d")
-days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m"))))
-
-cu = []
-i = 0
-for i in range(days_in_month):
-    val = int(total_val_target / days_in_month)
-    cu.append(val)
-
-
-def Cumulative(val):
-    new = []
-    cumsum = 0
-    for element in val:
-        cumsum += element
-        new.append(cumsum)
-    return new
-
-
-cumulativeTarget = Cumulative(cu)
-cumulativeTarget = cumulativeTarget[:int(days_in_month)]
-
-
-# # ----------- Sales ----------------------------------------------------
-
-day_wise_sales_df = pd.read_sql_query("""select right(left(left(InvoiceDate, 10),6),2) Date, SUM(Quantity) as SalesQty,SUM(Quantity*Weight)/1000 as SalesKg, sum(Quantity*InvoicePrice) as SalesVal from
-                    (select item.*,SRID, InvoiceDate from
-                    (select invoiceid, InvoiceDate , SRID from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-                    and convert(varchar(10),DATEADD(D,0,GETDATE()),126)
-                    ) as Sales
-                    inner join
-                    (select invoiceid,Quantity, Weight, InvoicePrice from SalesInvoiceItem 
-                    left join Hierarchy_SKU
-                    on SalesInvoiceItem.SKUID = Hierarchy_SKU.SKUID
-                    ) as item
-                    on sales.invoiceid=item.invoiceid where SRID=22) as fwe
-                    group by left(InvoiceDate, 10) """, conn)
-
-days = day_wise_sales_df.Date.tolist()
-day_salesVal = day_wise_sales_df.SalesVal.tolist()
-day_salesKg = day_wise_sales_df.SalesKg.tolist()
-
-
-cumulativeWeight = Cumulative(day_salesKg)
-cumulativeWeight = cumulativeTarget[:int(current_day)]
-
-
-cumulativeSalesVal = Cumulative(day_salesVal)
-cumulativeSalesVal = cumulativeSalesVal[:int(current_day)]
