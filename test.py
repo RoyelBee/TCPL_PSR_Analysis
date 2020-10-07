@@ -24,4 +24,22 @@ def Cumulative(val):
 
 
 cumulativeTarget = Cumulative(cu)
-print(cumulativeTarget[:int(current_day)])
+
+
+# print(cumulativeTarget[:int(current_day)])
+
+
+def currency_converter(num):
+    num_size = len(str(num))
+    if num_size >= 8:
+        number = str(round((num / 10000000), 2))+' Cr'
+    elif num_size >= 6:
+        number = str(round(num / 100000, 2))+' M'
+    elif num_size >= 4:
+        number = str(round(num / 1000, 2)) +' K'
+    else:
+        number = num
+    return number
+
+
+print(currency_converter(1135040))
