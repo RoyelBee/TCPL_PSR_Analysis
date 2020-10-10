@@ -134,7 +134,7 @@ total_weight_return = sum(return_df.ReturnKg)
 # # ------------ SR Info with brand wise sales and target -------------------------
 # # -------------------------------------------------------------------------------
 
-profile_df = pd.read_sql_query("""select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
+profile_df = pd.read_sql_query(""" select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
             t1.BrandName,t1.TargetVal,t2.SalesVal,T2.SalesKg, t1.TargetQty,t2.SalesQty from
             (select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',
             B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
@@ -205,5 +205,16 @@ print('Weight trend percent = ', w_trend_per)
 
 each_day_sales_kg =  sales_kg/ int(current_day)
 trend_val_kg = round((each_day_sales_kg*days_in_month), 2)
-
 print('Trend in Kg = ', trend_val_kg)
+
+# # -------- Invoice count ----------------------------------
+invoice_df = pd.read_sql_query(""" select count(InvoiceID) as TotalInvoice 
+            from SalesInvoices 
+            where SRID = 22 and 
+            InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
+
+total_invoice = int(invoice_df.TotalInvoice)
+val_drop_size = int(sales_val/total_invoice)
+w_drop_size   = int(sales_kg/total_invoice)
+

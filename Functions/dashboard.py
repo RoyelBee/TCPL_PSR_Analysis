@@ -37,6 +37,7 @@ achivL = ImageDraw.Draw(img)
 returnL = ImageDraw.Draw(img)
 trendVal = ImageDraw.Draw(img)
 trendPer = ImageDraw.Draw(img)
+drop_size_val = ImageDraw.Draw(img)
 
 
 # # ------- Weight Pointer ----------------------
@@ -46,6 +47,7 @@ achivL = ImageDraw.Draw(img)
 returnL = ImageDraw.Draw(img)
 trendW = ImageDraw.Draw(img)
 trendValW = ImageDraw.Draw(img)
+drop_sizeW = ImageDraw.Draw(img)
 
 # # ---------------------------------------------
 
@@ -77,8 +79,8 @@ trendVal.text((850, 400),  str(trendval) , (255, 255, 255), font=Viga)
 trendPer.text((1100, 400),  str(kpi.trend_percent) + "%"  , (255, 255, 255), font=Viga)
 
 
-
 val_return_p = round((kpi.total_val_return/kpi.sales_val)*100, 2)
+drop_size_val.text((850, 550), str(kpi.currency_converter(kpi.val_drop_size)) , (255, 255, 255), font=Viga)
 returnL.text((1100, 550),  str(val_return_p) +"%", (255, 255, 255), font=Viga)
 
 
@@ -94,10 +96,11 @@ wTargetL.text((70, 810),  str(mtd_weight_target) + ' Kg', (255, 255, 255), font=
 wSalesL.text((340, 810),  str(WSalesKg) + ' Kg', (255, 255, 255), font=Viga)
 achivL.text((600, 810),  str(achivKg) +"%", (255, 255, 255), font=Viga)
 trendW.text((840, 810),  str(int(kpi.trend_val_kg)) + ' Kg', (255, 255, 255), font=Viga)
-trendValW.text((1100, 810),  str(kpi.trend_percent) + "%"  , (255, 255, 255), font=Viga)
+trendValW.text((1100, 810),  str(kpi.w_trend_per) + "%"  , (255, 255, 255), font=Viga)
 
 
 returnL.text((1100, 960),  str(kg_return_p) +"%", (255, 255, 255), font=Viga)
+drop_sizeW.text((850, 960),  str(kpi.w_drop_size) +" Kg", (255, 255, 255), font=Viga)
 
 
 
