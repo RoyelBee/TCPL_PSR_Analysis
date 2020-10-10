@@ -35,6 +35,8 @@ targetL = ImageDraw.Draw(img)
 salesL = ImageDraw.Draw(img)
 achivL = ImageDraw.Draw(img)
 returnL = ImageDraw.Draw(img)
+trendVal = ImageDraw.Draw(img)
+trendPer = ImageDraw.Draw(img)
 
 
 # # ------- Weight Pointer ----------------------
@@ -42,6 +44,8 @@ wTargetL = ImageDraw.Draw(img)
 wSalesL = ImageDraw.Draw(img)
 achivL = ImageDraw.Draw(img)
 returnL = ImageDraw.Draw(img)
+trendW = ImageDraw.Draw(img)
+trendValW = ImageDraw.Draw(img)
 
 # # ---------------------------------------------
 
@@ -60,13 +64,18 @@ dateL.text((1050, 50), str(day) , (29, 34, 105), font=Viga)
 timeL.text((1050, 137), str(time) , (29, 34, 105), font=Viga)
 
 # # ------ Value Section  ----------------------------------------
-target = kpi.currency_converter(kpi.total_val_target)
+mtd_target = int((kpi.total_val_target/kpi.days_in_month)* kpi.current_day)
+target = kpi.currency_converter(mtd_target)
 sales = kpi.currency_converter(kpi.sales_val)
-achiv = round((kpi.sales_val/kpi.total_val_target)*100, 2)
+achiv = round((kpi.sales_val/mtd_target)*100, 2)
+trendval = kpi.currency_converter(int(kpi.trend_val))
 
 targetL.text((70, 400),  str(target) , (255, 255, 255), font=Viga)
 salesL.text((330, 400),  str(sales) , (255, 255, 255), font=Viga)
 achivL.text((600, 400),  str(achiv) +"%", (255, 255, 255), font=Viga)
+trendVal.text((850, 400),  str(trendval) , (255, 255, 255), font=Viga)
+trendPer.text((1100, 400),  str(kpi.trend_percent) + "%"  , (255, 255, 255), font=Viga)
+
 
 
 val_return_p = round((kpi.total_val_return/kpi.sales_val)*100, 2)
@@ -75,15 +84,19 @@ returnL.text((1100, 550),  str(val_return_p) +"%", (255, 255, 255), font=Viga)
 
 
 # # --------- Weight wise KPI -------------------------------------------
-Wtarget = kpi.currency_converter(kpi.total_weight_target)
-WSalesKg = kpi.currency_converter(kpi.sales_kg)
-achivKg = round((kpi.sales_kg/kpi.total_weight_target)*100, 2)
+mtd_weight_target = int((kpi.total_weight_target/kpi.days_in_month)* kpi.current_day)
+WSalesKg = kpi.sales_kg
+achivKg = round((kpi.sales_kg/mtd_weight_target)*100, 2)
 kg_return_p = round((kpi.total_weight_return/kpi.sales_kg)*100, 2)
 
 
-wTargetL.text((70, 810),  Wtarget, (255, 255, 255), font=Viga)
-wSalesL.text((340, 810),  WSalesKg, (255, 255, 255), font=Viga)
+wTargetL.text((70, 810),  str(mtd_weight_target) + ' Kg', (255, 255, 255), font=Viga)
+wSalesL.text((340, 810),  str(WSalesKg) + ' Kg', (255, 255, 255), font=Viga)
 achivL.text((600, 810),  str(achivKg) +"%", (255, 255, 255), font=Viga)
+trendW.text((840, 810),  str(int(kpi.trend_val_kg)) + ' Kg', (255, 255, 255), font=Viga)
+trendValW.text((1100, 810),  str(kpi.trend_percent) + "%"  , (255, 255, 255), font=Viga)
+
+
 returnL.text((1100, 960),  str(kg_return_p) +"%", (255, 255, 255), font=Viga)
 
 

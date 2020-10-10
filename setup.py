@@ -11,6 +11,7 @@ import Functions.generate_table as tbl
 import xlrd
 import path
 
+import Functions.dashboard
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
 msgRoot = MIMEMultipart('related')
@@ -46,14 +47,14 @@ msgText = MIMEText('This is the alternative plain text message.')
 msgAlternative.attach(msgText)
 
 # # Mail Body
+
 msgText = MIMEText("""
              
-             
+             <img src="cid:dash" height='1000'> <br>
              <br> """ + tbl.all_table + """
              
              <h4> This report is system generated. If you have any query please contact with AI Team.  </h4> 
              <img src="cid:logo" height='150'> <br>
-
 
              """, 'html')
 msgAlternative.attach(msgText)
@@ -69,8 +70,15 @@ msgAlternative.attach(msgText)
 # part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
 # msgRoot.attach(part)
 
+# # -------- Dashboard ----------------------------
+fp = open(dirpath + './Images/dashboard.png', 'rb')
+dash = MIMEImage(fp.read())
+fp.close()
 
-# # Attached Logo
+dash.add_header('Content-ID', '<dash>')
+msgRoot.attach(dash)
+
+# # Attached Logo ------------------------------
 fp = open(dirpath + './Images/AI TEAM.png', 'rb')
 logo = MIMEImage(fp.read())
 fp.close()
