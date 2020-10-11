@@ -10,17 +10,19 @@ conn = db.connect('DRIVER={SQL Server};'
                   'UID=sa;'
                   'PWD=erp;')
 
+
 def currency_converter(num):
     num_size = len(str(num))
     if num_size >= 8:
-        number = str(round((num / 10000000), 2))+' Cr'
+        number = str(round((num / 10000000), 2)) + ' Cr'
     elif num_size >= 7:
-        number = str(round(num / 1000000, 2))+' M'
+        number = str(round(num / 1000000, 2)) + ' M'
     elif num_size >= 4:
-        number = str(round(num / 1000, 2)) +' K'
+        number = str(round(num / 1000, 2)) + ' K'
     else:
         number = num
     return number
+
 
 # # -------- Total value and Weight Target  -----------------------------------
 # # ---------------------------------------------------------------------------
@@ -34,8 +36,6 @@ target_df = pd.read_sql_query(""" select  isnull(sum(targetvalue), 0) as TargetV
 
 total_val_target = int(target_df.TargetVal)
 total_weight_target = int(target_df.TargetKg)
-
-
 
 # # ---------- Total Sales in KG and Values -----------------------------------------
 # # ---------------------------------------------------------------------------------
@@ -183,28 +183,27 @@ designation = profile_df.SRDESIGNATION.loc[0]
 sales_val = int(sum(profile_df.SalesVal))
 sales_kg = int(sum(profile_df.SalesKg))
 
-
 # # -------- Trends Calculation ----------------
 date = datetime.datetime.now()
-current_day = int(date.strftime("%d"))-1
+current_day = int(date.strftime("%d")) - 1
 days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m"))))
 
-mtd_avg_sales = sales_val/int(current_day)
+mtd_avg_sales = sales_val / int(current_day)
 each_day_target = total_val_target / int(days_in_month)
-each_day_sales =  sales_val/ int(current_day)
+each_day_sales = sales_val / int(current_day)
 
-trend_percent = round((sales_val*100)/total_val_target, 2)
+trend_percent = round((sales_val * 100) / total_val_target, 2)
 print('Trend % = ', trend_percent)
-trend_val = round((each_day_sales*days_in_month), 2)
+trend_val = round((each_day_sales * days_in_month), 2)
 print('Trend Val = ', trend_val)
 
 # # ----------- Trend Weight ---------------------------------
 
-w_trend_per = round((sales_kg*100/total_weight_target), 2)
+w_trend_per = round((sales_kg * 100 / total_weight_target), 2)
 print('Weight trend percent = ', w_trend_per)
 
-each_day_sales_kg =  sales_kg/ int(current_day)
-trend_val_kg = round((each_day_sales_kg*days_in_month), 2)
+each_day_sales_kg = sales_kg / int(current_day)
+trend_val_kg = round((each_day_sales_kg * days_in_month), 2)
 print('Trend in Kg = ', trend_val_kg)
 
 # # -------- Invoice count ----------------------------------
@@ -215,6 +214,44 @@ invoice_df = pd.read_sql_query(""" select count(InvoiceID) as TotalInvoice
             and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
 
 total_invoice = int(invoice_df.TotalInvoice)
-val_drop_size = int(sales_val/total_invoice)
-w_drop_size   = int(sales_kg/total_invoice)
+val_drop_size = int(sales_val / total_invoice)
+w_drop_size = int(sales_kg / total_invoice)
 
+# # ------------------- Strike Rate ---------------------------
+total_cust_df = pd.read_sql_query("""select count(customerid) as TotalCustomer from Customers
+where routeid in (select distinct routeid from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22) """, conn)
+
+total_cust = int(total_cust_df.TotalCustomer)
+
+effective_cust_df = pd.read_sql_query(""" select count(distinct CustomerID) as EffectiveCust 
+            from SalesInvoices 
+            where srid=22 and InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
+
+effective_cust = int(effective_cust_df.EffectiveCust)
+
+strike_rate = round((effective_cust / total_cust) * 100, 2)
+print('Strike Rate = ', strike_rate)
+
+# # -------------------------- Visit Rate ----------------------------------
+
+visit_cust_df = pd.read_sql_query("""select count(distinct CustomerID) as VisitCust
+                from SalesOrders 
+                where srid = 22 and OrderDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
+visited_cust = int(visit_cust_df.VisitCust)
+
+visit_rate = round((visited_cust / total_cust) * 100, 2)
+print('Visit Rate = ', visit_rate)
+
+# # ------------------ LPC --------------------------------------------------
+
+inv_df = pd.read_sql_query(""" select  count(distinct InvoiceID) as TotalInvoice from SalesInvoices
+        where srid=22 and InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+        and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)""", conn)
+
+total_inv = int(inv_df.TotalInvoice)
+
+lpc = round((total_inv / visited_cust) * 100, 2)
+print('LPC is     = ', lpc)

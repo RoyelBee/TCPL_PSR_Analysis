@@ -37,6 +37,10 @@ achivL = ImageDraw.Draw(img)
 returnL = ImageDraw.Draw(img)
 trendVal = ImageDraw.Draw(img)
 trendPer = ImageDraw.Draw(img)
+visitV = ImageDraw.Draw(img)
+strike = ImageDraw.Draw(img)
+lpc = ImageDraw.Draw(img)
+
 drop_size_val = ImageDraw.Draw(img)
 
 
@@ -47,6 +51,8 @@ achivL = ImageDraw.Draw(img)
 returnL = ImageDraw.Draw(img)
 trendW = ImageDraw.Draw(img)
 trendValW = ImageDraw.Draw(img)
+visitW = ImageDraw.Draw(img)
+
 drop_sizeW = ImageDraw.Draw(img)
 
 # # ---------------------------------------------
@@ -75,13 +81,17 @@ trendval = kpi.currency_converter(int(kpi.trend_val))
 targetL.text((70, 400),  str(target) , (255, 255, 255), font=Viga)
 salesL.text((330, 400),  str(sales) , (255, 255, 255), font=Viga)
 achivL.text((600, 400),  str(achiv) +"%", (255, 255, 255), font=Viga)
-trendVal.text((850, 400),  str(trendval) , (255, 255, 255), font=Viga)
+trendVal.text((840, 400),  str(trendval) , (255, 255, 255), font=Viga)
 trendPer.text((1100, 400),  str(kpi.trend_percent) + "%"  , (255, 255, 255), font=Viga)
 
 
 val_return_p = round((kpi.total_val_return/kpi.sales_val)*100, 2)
+
+visitV.text((70, 550), str(kpi.visit_rate) + '%' , (255, 255, 255), font=Viga)
+strike.text((320, 550), str(kpi.strike_rate) + '%' , (255, 255, 255), font=Viga)
+lpc.text((600, 550), str(kpi.lpc) + '%' , (255, 255, 255), font=Viga)
 drop_size_val.text((850, 550), str(kpi.currency_converter(kpi.val_drop_size)) , (255, 255, 255), font=Viga)
-returnL.text((1100, 550),  str(val_return_p) +"%", (255, 255, 255), font=Viga)
+returnL.text((1120, 550),  str(val_return_p) +"%", (255, 255, 255), font=Viga)
 
 
 
@@ -99,7 +109,10 @@ trendW.text((840, 810),  str(int(kpi.trend_val_kg)) + ' Kg', (255, 255, 255), fo
 trendValW.text((1100, 810),  str(kpi.w_trend_per) + "%"  , (255, 255, 255), font=Viga)
 
 
-returnL.text((1100, 960),  str(kg_return_p) +"%", (255, 255, 255), font=Viga)
+returnL.text((1120, 960),  str(kg_return_p) +"%", (255, 255, 255), font=Viga)
+visitW.text((70, 960),  str(kpi.visit_rate) +"%", (255, 255, 255), font=Viga)
+strike.text((320, 960), str(kpi.strike_rate) + '%' , (255, 255, 255), font=Viga)
+strike.text((600, 960), str(kpi.lpc) + '%' , (255, 255, 255), font=Viga)
 drop_sizeW.text((850, 960),  str(kpi.w_drop_size) +" Kg", (255, 255, 255), font=Viga)
 
 
