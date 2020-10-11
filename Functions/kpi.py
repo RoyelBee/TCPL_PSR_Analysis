@@ -193,18 +193,18 @@ each_day_target = total_val_target / int(days_in_month)
 each_day_sales = sales_val / int(current_day)
 
 trend_percent = round((sales_val * 100) / total_val_target, 2)
-print('Trend % = ', trend_percent)
+# print('Trend % = ', trend_percent)
 trend_val = round((each_day_sales * days_in_month), 2)
-print('Trend Val = ', trend_val)
+# print('Trend Val = ', trend_val)
 
 # # ----------- Trend Weight ---------------------------------
 
 w_trend_per = round((sales_kg * 100 / total_weight_target), 2)
-print('Weight trend percent = ', w_trend_per)
+# print('Weight trend percent = ', w_trend_per)
 
 each_day_sales_kg = sales_kg / int(current_day)
 trend_val_kg = round((each_day_sales_kg * days_in_month), 2)
-print('Trend in Kg = ', trend_val_kg)
+# print('Trend in Kg = ', trend_val_kg)
 
 # # -------- Invoice count ----------------------------------
 invoice_df = pd.read_sql_query(""" select count(InvoiceID) as TotalInvoice 
@@ -232,7 +232,7 @@ effective_cust_df = pd.read_sql_query(""" select count(distinct CustomerID) as E
 effective_cust = int(effective_cust_df.EffectiveCust)
 
 strike_rate = round((effective_cust / total_cust) * 100, 2)
-print('Strike Rate = ', strike_rate)
+# print('Strike Rate = ', strike_rate)
 
 # # -------------------------- Visit Rate ----------------------------------
 
@@ -243,7 +243,7 @@ visit_cust_df = pd.read_sql_query("""select count(distinct CustomerID) as VisitC
 visited_cust = int(visit_cust_df.VisitCust)
 
 visit_rate = round((visited_cust / total_cust) * 100, 2)
-print('Visit Rate = ', visit_rate)
+# print('Visit Rate = ', visit_rate)
 
 # # ------------------ LPC --------------------------------------------------
 
@@ -254,4 +254,21 @@ inv_df = pd.read_sql_query(""" select  count(distinct InvoiceID) as TotalInvoice
 total_inv = int(inv_df.TotalInvoice)
 
 lpc = round((total_inv / visited_cust) * 100, 2)
-print('LPC is     = ', lpc)
+# print('LPC is     = ', lpc)
+
+
+# # --------- Day wise Drop size -----------------------------------
+day_drop_size_df = pd.read_sql_query(""" select right(left(left(InvoiceDate, 12),6),2) as Date, SUM(SalesInvoiceItem.Quantity * SalesInvoiceItem.InvoicePrice) as Sales
+                , count(SalesInvoices.InvoiceID) as TotalInvoice, (SUM(SalesInvoiceItem.Quantity * SalesInvoiceItem.InvoicePrice)/count(SalesInvoices.InvoiceID)) as DropSizeValue
+                from SalesInvoices 
+                left join SalesInvoiceItem 
+                on SalesInvoices.InvoiceID = SalesInvoiceItem.InvoiceID
+                where SRID = 22 and 
+                InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)
+                group by InvoiceDate""", conn)
+
+days = day_drop_size_df.Date.tolist()
+drop_size_val = day_drop_size_df.DropSizeValue.tolist()
+
+print(drop_size_val)
