@@ -24,8 +24,8 @@ def currency_converter(num):
     return number
 
 
-# # -------- Total value and Weight Target  -----------------------------------
-# # ---------------------------------------------------------------------------
+# # -------- Total value and Weight Target  -------------------------------------
+# # -----------------------------------------------------------------------------
 target_df = pd.read_sql_query(""" select  isnull(sum(targetvalue), 0) as TargetVal,
             isnull(sum((targetqty)*Weight)/1000, 0) as TargetKg
             from TargetDistributionItemBySR
@@ -249,7 +249,7 @@ visit_rate = round((visited_cust / total_cust) * 100, 2)
 
 inv_df = pd.read_sql_query(""" select  count(distinct InvoiceID) as TotalInvoice from SalesInvoices
         where srid=22 and InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-        and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)""", conn)
+        and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
 
 total_inv = int(inv_df.TotalInvoice)
 
@@ -293,15 +293,15 @@ day_strike_df = pd.read_sql_query("""
                 group by right(left(left(InvoiceDate, 12),6),2)
                 """, conn)
 
-strike_days =  day_strike_df.Date.tolist()
+strike_days1 =  day_strike_df.Date.tolist()
 effective_strike =  day_strike_df.Effective
 totalCustomer_strike =  day_strike_df.TotalCustomer
 sr = ((effective_strike/totalCustomer_strike)*100).tolist()
 strike_rate = []
 for i in range(len(sr)):
     strike_rate.append(int(sr[i]))
-# print(strike_days)
-# print(strike_rate)
+print(strike_days1)
+print(strike_rate)
 
 # # ------------ Day wise Visit Rate -------------------------
 day_visit_rate_df = pd.read_sql_query(""" select right(left(left(OrderDate, 12),6),2) as Date, 
@@ -329,3 +329,23 @@ vl= ((SalesCustomer/VisitedCustomer)*100).tolist()
 visit_rate = []
 for i in range(len(vl)):
     visit_rate.append(int(vl[i]))
+
+
+# # ----------- Day wise LPS Rate ---------------------------------------
+day_wise_lpc = pd.read_sql_query(""" select right(left(left(SalesOrders.OrderDate, 12),6),2) as Date , 
+            count(distinct InvoiceID) as TotalInvoice , count(distinct SalesOrders.CustomerID) as VisitCust from SalesInvoices
+            left join SalesOrders 
+            on SalesInvoices.RouteID = SalesOrders.RouteID
+            where SalesInvoices.srid = 22 and SalesOrders.OrderDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)
+            group by right(left(left(SalesOrders.OrderDate, 12),6),2)
+            order by Date asc """, conn)
+
+lpc_days =  day_wise_lpc.Date.tolist()
+invoic = day_wise_lpc.TotalInvoice
+visut_cust = day_wise_lpc.VisitCust
+
+lr = ((invoic/visut_cust)*100).tolist()
+lpc_rate = []
+for i in range(len(lr)):
+    lpc_rate.append(int(lr[i]))
