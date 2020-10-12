@@ -218,7 +218,7 @@ val_drop_size = int(sales_val / total_invoice)
 w_drop_size = int(sales_kg / total_invoice)
 
 # # ------------------- Strike Rate ---------------------------
-total_cust_df = pd.read_sql_query("""select count(customerid) as TotalCustomer from Customers
+total_cust_df = pd.read_sql_query(""" select count(customerid) as TotalCustomer from Customers
 where routeid in (select distinct routeid from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
 and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22) """, conn)
 
@@ -266,9 +266,66 @@ day_drop_size_df = pd.read_sql_query(""" select right(left(left(InvoiceDate, 12)
                 where SRID = 22 and 
                 InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
                 and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)
-                group by InvoiceDate""", conn)
+                group by InvoiceDate """, conn)
 
 days = day_drop_size_df.Date.tolist()
 drop_size_val = day_drop_size_df.DropSizeValue.tolist()
 
-print(drop_size_val)
+# print(drop_size_val)
+
+
+# # --------- Day wise strike rate --------------------------------
+day_strike_df = pd.read_sql_query(""" 
+                select right(left(left(InvoiceDate, 12),6),2) as Date, 
+                count(distinct SalesInvoices.CustomerID) as Effective,
+                count(distinct Customers.customerid) as TotalCustomer from
+                (select routeid,CustomerID
+                 from Customers) as Customers
+                right join 
+                (select routeid,customerid,InvoiceDate from SalesInvoices
+                inner join 
+                 SalesInvoiceItem
+                on SalesInvoices.invoiceid=SalesInvoiceItem.invoiceid
+                where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22)
+                 as SalesInvoices
+                on Customers.routeid = SalesInvoices.routeid
+                group by right(left(left(InvoiceDate, 12),6),2)
+                """, conn)
+
+strike_days =  day_strike_df.Date.tolist()
+effective_strike =  day_strike_df.Effective
+totalCustomer_strike =  day_strike_df.TotalCustomer
+sr = ((effective_strike/totalCustomer_strike)*100).tolist()
+strike_rate = []
+for i in range(len(sr)):
+    strike_rate.append(int(sr[i]))
+# print(strike_days)
+# print(strike_rate)
+
+# # ------------ Day wise Visit Rate -------------------------
+day_visit_rate_df = pd.read_sql_query(""" select right(left(left(OrderDate, 12),6),2) as Date, 
+            count(distinct SalesInvoices.CustomerID) as SalesCustomer,
+            count(distinct Customers.customerid) as VisitedCustomer from
+            (select routeid,CustomerID
+             from Customers) as Customers
+            right join 
+            (select routeid,customerid,OrderDate from SalesOrders
+            inner join 
+             SalesOrderItem
+            on SalesOrders.OrderID=SalesOrderItem.OrderID
+            where OrderDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22)
+             as SalesInvoices
+            on Customers.routeid = SalesInvoices.routeid
+            group by right(left(left(OrderDate, 12),6),2)
+             """, conn)
+
+strike_days =  day_visit_rate_df.Date.tolist()
+SalesCustomer =  day_visit_rate_df.SalesCustomer
+VisitedCustomer =  day_visit_rate_df.VisitedCustomer
+
+vl= ((SalesCustomer/VisitedCustomer)*100).tolist()
+visit_rate = []
+for i in range(len(vl)):
+    visit_rate.append(int(vl[i]))
