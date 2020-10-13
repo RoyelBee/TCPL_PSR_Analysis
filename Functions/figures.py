@@ -2,7 +2,8 @@ import pyodbc as db
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import Functions.kpi as data
+import Functions.kpi as d
+import math
 
 conn = db.connect('DRIVER={SQL Server};'
                   'SERVER=10.168.2.168;'
@@ -156,5 +157,133 @@ sales_qty = df['SalesQty'].tolist()
 # plt.close()
 
 
-# # -------- Day wise strike Rate line chart -------------------------------
+# # # -------- Day wise strike Rate line chart -------------------------------
+def day_wise_strike_rate():
+    range(1, len(d.strike_days1) + 1, 1)
+    ypos=np.arange(len(d.strike_days1))
+    # range(len(d.strike_days1))
 
+    fig, ax = plt.subplots(figsize=(12.81, 4.8))
+    plt.ylim(0, 101, 10)
+    plt.plot(d.day_strike_rate, color='green', linewidth='4',  marker='D', markerfacecolor="red")
+
+    # Show data point ----------------------------------------
+    for i, v in enumerate(d.day_strike_rate):
+        ax.text(i, v+3, "%d" %v, ha="center", fontsize='14')
+
+    ax.set_xticks(ypos)
+    ax.set_xticklabels(d.strike_days1, fontsize=14)
+
+    plt.title('02. Day wise Strike Days', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Strike Rate %', fontsize='14', color='black', fontweight='bold')
+    plt.legend(['Strike Rate'], loc='upper right', fontsize='14')
+    plt.tight_layout()
+    # plt.show()
+    print('Figure 2: Day wise strike rate generated')
+    return plt.savefig('./Images/day_wise_strike_rate.png')
+
+
+# # # -------- Day wise visit Rate ----------------------------------
+def day_wise_visit_rate():
+    range(1, len(d.visit_days) + 1, 1)
+    ypos = np.arange(len(d.visit_days))
+    range(len(d.day_visit_rate))
+
+    fig, ax = plt.subplots(figsize=(12.81, 4.8))
+    plt.ylim(0, 101, 10)
+    plt.plot(d.day_visit_rate, color='#007cff', linewidth='4', marker='D', markerfacecolor="#fcff00")
+
+    # Show data point ----------------------------------------
+    for i, v in enumerate(d.day_visit_rate):
+        ax.text(i, v + 3, "%d" % v, ha="center", fontsize='14')
+
+    ax.set_xticks(ypos)
+    ax.set_xticklabels(d.visit_days, fontsize=14)
+
+    plt.title('01. Day wise Visit Rate', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Visit Rate %', fontsize='14', color='black', fontweight='bold')
+    plt.legend(['Visit Rate'], loc='upper right', fontsize='14')
+    plt.tight_layout()
+    # plt.show()
+    print('Figure 1: Day wise visit rate generated')
+    return plt.savefig('./Images/day_wise_visit_rate.png')
+
+# # -------- Day wise LPC Rate -------------------------------------
+def day_wise_lpc_rate():
+    range(1, len(d.lpc_days) + 1, 1)
+    ypos = np.arange(len(d.lpc_days))
+
+
+    fig, ax = plt.subplots(figsize=(12.81, 4.8))
+    plt.ylim(0, max(d.lpc_rate) + 2, 1)
+    plt.plot(d.lpc_rate, color='#ff8300', linewidth='4', marker='D', markerfacecolor="#3633ff")
+
+    # Show data point ----------------------------------------
+    for i, v in enumerate(d.lpc_rate):
+        ax.text(i, v + .1, "%d" % v, ha="center", fontsize='14')
+
+    ax.set_xticks(ypos)
+    ax.set_xticklabels(d.lpc_days, fontsize=14)
+
+    plt.title('05. Day wise LPC Rate', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('LPC Rate', fontsize='14', color='black', fontweight='bold')
+    plt.legend(['LPC Rate'], loc='upper right', fontsize='14')
+    plt.tight_layout()
+    # plt.show()
+    print('Figure 03: Day wise LPC Rate generated')
+    return plt.savefig('./Images/day_wise_lpc_rate.png')
+
+# # ------ Day wise Drop Size Value -------------------------------------
+def day_wise_drop_size_value():
+    days = range(1, len(d.drop_days) + 1, 1)
+    ypos=np.arange(len(d.drop_days))
+    y = range(len(d.drop_size_val))
+
+    fig, ax = plt.subplots(figsize=(12.81, 4.8))
+    plt.ylim(0, math.ceil(max(d.drop_size_val) * 1.2))
+    line = plt.plot(d.drop_size_val, color='#b100ff', linewidth='4',  marker='D', markerfacecolor="red")
+
+    # Show data point ----------------------------------------
+    for i, v in enumerate(d.drop_size_val):
+        ax.text(i, v+10, "%d" %v, ha="center", fontsize='14')
+
+    ax.set_xticks(ypos)
+    ax.set_xticklabels(d.drop_days, fontsize=14)
+
+    plt.title('6. Day wise Drop Size Value', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Drop Size', fontsize='14', color='black', fontweight='bold')
+    plt.legend(['Drop Size'], loc='upper right', fontsize='14')
+    plt.tight_layout()
+    # plt.show()
+    print('Fig 04: Day wise value drop size generated')
+    return plt.savefig('./Images/day_wise_drop_size_val.png')
+
+# # ----------- Day wise Drop Size Kg ------------------------
+def day_wise_drop_size_kg():
+    range(1, len(d.drop_days) + 1, 1)
+    ypos=np.arange(len(d.drop_days))
+    range(len(d.drop_size_kg))
+
+    fig, ax = plt.subplots(figsize=(12.81, 4.8))
+    plt.ylim(0, math.ceil(max(d.drop_size_kg) * 1.2))
+    plt.plot(d.drop_size_kg, color='#b100ff', linewidth='4',  marker='D', markerfacecolor="red")
+
+    # Show data point ----------------------------------------
+    for i, v in enumerate(d.drop_size_kg):
+        ax.text(i, v+.1, str(round(v,2)), ha="center", fontsize='14')
+
+    ax.set_xticks(ypos)
+    ax.set_xticklabels(d.drop_days, fontsize=14)
+
+    plt.title('7. Day wise Drop Size in Kg', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Drop Size Kg', fontsize='14', color='black', fontweight='bold')
+    plt.legend(['Drop Size Kg'], loc='upper right', fontsize='14')
+    plt.tight_layout()
+    # plt.show()
+    print('Fig : Drop size kg generated')
+    return plt.savefig('./Images/day_wise_drop_size_kg.png')

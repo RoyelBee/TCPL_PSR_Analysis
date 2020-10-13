@@ -245,32 +245,31 @@ visited_cust = int(visit_cust_df.VisitCust)
 visit_rate = round((visited_cust / total_cust) * 100, 2)
 # print('Visit Rate = ', visit_rate)
 
-# # ------------------ LPC --------------------------------------------------
 
-inv_df = pd.read_sql_query(""" select  count(distinct InvoiceID) as TotalInvoice from SalesInvoices
-        where srid=22 and InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-        and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
-
-total_inv = int(inv_df.TotalInvoice)
-
-lpc = round((total_inv / visited_cust) * 100, 2)
-# print('LPC is     = ', lpc)
 
 
 # # --------- Day wise Drop size -----------------------------------
 day_drop_size_df = pd.read_sql_query(""" select right(left(left(InvoiceDate, 12),6),2) as Date, SUM(SalesInvoiceItem.Quantity * SalesInvoiceItem.InvoicePrice) as Sales
-                , count(SalesInvoices.InvoiceID) as TotalInvoice, (SUM(SalesInvoiceItem.Quantity * SalesInvoiceItem.InvoicePrice)/count(SalesInvoices.InvoiceID)) as DropSizeValue
+                ,count(SalesInvoices.InvoiceID) as TotalInvoice, 
+                (SUM(SalesInvoiceItem.Quantity * SalesInvoiceItem.InvoicePrice)/count(SalesInvoices.InvoiceID)) as DropSizeValue
+                ,(sum(SalesInvoiceItem.Quantity * Weight)/1000)/count(SalesInvoices.InvoiceID) as DropSizeKg
                 from SalesInvoices 
                 left join SalesInvoiceItem 
                 on SalesInvoices.InvoiceID = SalesInvoiceItem.InvoiceID
+                                
+                left join Hierarchy_SKU
+                on SalesInvoiceItem.SKUID = Hierarchy_SKU.SKUID
                 where SRID = 22 and 
                 InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
                 and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)
-                group by InvoiceDate """, conn)
+                group by InvoiceDate 
+                order by InvoiceDate asc """, conn)
 
-days = day_drop_size_df.Date.tolist()
+drop_days = day_drop_size_df.Date.tolist()
 drop_size_val = day_drop_size_df.DropSizeValue.tolist()
+drop_size_kg = day_drop_size_df.DropSizeKg.tolist()
 
+# print(drop_days)
 # print(drop_size_val)
 
 
@@ -297,11 +296,11 @@ strike_days1 =  day_strike_df.Date.tolist()
 effective_strike =  day_strike_df.Effective
 totalCustomer_strike =  day_strike_df.TotalCustomer
 sr = ((effective_strike/totalCustomer_strike)*100).tolist()
-strike_rate = []
+day_strike_rate = []
 for i in range(len(sr)):
-    strike_rate.append(int(sr[i]))
-print(strike_days1)
-print(strike_rate)
+    day_strike_rate.append(int(sr[i]))
+# print('Strike Days = ',strike_days1)
+
 
 # # ------------ Day wise Visit Rate -------------------------
 day_visit_rate_df = pd.read_sql_query(""" select right(left(left(OrderDate, 12),6),2) as Date, 
@@ -321,31 +320,30 @@ day_visit_rate_df = pd.read_sql_query(""" select right(left(left(OrderDate, 12),
             group by right(left(left(OrderDate, 12),6),2)
              """, conn)
 
-strike_days =  day_visit_rate_df.Date.tolist()
+visit_days =  day_visit_rate_df.Date.tolist()
 SalesCustomer =  day_visit_rate_df.SalesCustomer
 VisitedCustomer =  day_visit_rate_df.VisitedCustomer
-
+# print('visit days = ', visit_days)
 vl= ((SalesCustomer/VisitedCustomer)*100).tolist()
-visit_rate = []
+day_visit_rate = []
 for i in range(len(vl)):
-    visit_rate.append(int(vl[i]))
+    day_visit_rate.append(int(vl[i]))
 
 
 # # ----------- Day wise LPS Rate ---------------------------------------
-day_wise_lpc = pd.read_sql_query(""" select right(left(left(SalesOrders.OrderDate, 12),6),2) as Date , 
-            count(distinct InvoiceID) as TotalInvoice , count(distinct SalesOrders.CustomerID) as VisitCust from SalesInvoices
-            left join SalesOrders 
-            on SalesInvoices.RouteID = SalesOrders.RouteID
-            where SalesInvoices.srid = 22 and SalesOrders.OrderDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)
-            group by right(left(left(SalesOrders.OrderDate, 12),6),2)
-            order by Date asc """, conn)
+day_wise_lpc = pd.read_sql_query(""" select day(invoicedate) as Date ,count( sale.invoiceid)/count(distinct 
+sale.InvoiceID) as LPC from  
+                (select * from SalesInvoices where InvoiceDate  between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22) as sale
+                inner join 
+                (select * from SalesInvoiceItem) as item
+                on sale.invoiceid=item.invoiceid
+                group by day(invoicedate)
+                order by day(invoicedate) asc
+                                """, conn)
 
 lpc_days =  day_wise_lpc.Date.tolist()
-invoic = day_wise_lpc.TotalInvoice
-visut_cust = day_wise_lpc.VisitCust
+lpc_rate = day_wise_lpc.LPC.tolist()
+lpc = round(sum(day_wise_lpc.LPC)/len(lpc_rate), 2)
 
-lr = ((invoic/visut_cust)*100).tolist()
-lpc_rate = []
-for i in range(len(lr)):
-    lpc_rate.append(int(lr[i]))
+

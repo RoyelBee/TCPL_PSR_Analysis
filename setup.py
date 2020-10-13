@@ -14,9 +14,19 @@ import path
 import Functions.dashboard
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
+# # ------ Generate all Figures ----------------------------
+import Functions.figures as fg
+fg.day_wise_visit_rate()
+fg.day_wise_strike_rate()
+fg.day_wise_lpc_rate()
+fg.day_wise_drop_size_value()
+fg.day_wise_drop_size_kg()
+# # --------------------------------------------------------
+
+
 msgRoot = MIMEMultipart('related')
 me = 'erp-bi.service@transcombd.com'
-to = ['rejaul.islam@transcombd.com', '']
+to = ['rejaul.islam@transcombd.com', 'aftab.uddin@transcombd.com']
 cc = ['', '']
 bcc = ['', '']
 
@@ -50,11 +60,16 @@ msgAlternative.attach(msgText)
 
 msgText = MIMEText("""
              
-             <img src="cid:dash" height='1000'> <br>
+             <img src="cid:dash" height='1000', width='1280'> <br>
+             <img src="cid:visit" > <br>
+             <img src="cid:strike" > <br>
+             <img src="cid:lpc" > <br>
+             <img src="cid:ds_val" > <br>
+             <img src="cid:ds_kg" > <br>
              <br> """ + tbl.all_table + """
              
              <h4> This report is system generated. If you have any query please contact with AI Team.  </h4> 
-             <img src="cid:logo" height='150'> <br>
+             <img src="cid:logo" height='150' width='200'> <br>
 
              """, 'html')
 msgAlternative.attach(msgText)
@@ -77,6 +92,47 @@ fp.close()
 
 dash.add_header('Content-ID', '<dash>')
 msgRoot.attach(dash)
+
+# # ------- Day wise Visit Rate -----------------------------
+fp = open(dirpath + '/Images/day_wise_visit_rate.png', 'rb')
+visit = MIMEImage(fp.read())
+fp.close()
+
+visit.add_header('Content-ID', '<visit>')
+msgRoot.attach(visit)
+
+## ------- Day wise Strike rate ----------------------------
+fp = open(dirpath + '/Images/day_wise_strike_rate.png', 'rb')
+strike = MIMEImage(fp.read())
+fp.close()
+
+strike.add_header('Content-ID', '<strike>')
+msgRoot.attach(strike)
+
+
+# # ------ Day wise LPC -----------------------------------
+fp = open(dirpath + '/Images/day_wise_lpc_rate.png', 'rb')
+lpc = MIMEImage(fp.read())
+fp.close()
+
+lpc.add_header('Content-ID', '<lpc>')
+msgRoot.attach(lpc)
+
+# # ------ Day wise Drop Size Value -----------------------------------
+fp = open(dirpath + '/Images/day_wise_drop_size_val.png', 'rb')
+ds_val = MIMEImage(fp.read())
+fp.close()
+
+ds_val.add_header('Content-ID', '<ds_val>')
+msgRoot.attach(ds_val)
+
+# # ------ Day wise Drop Size Kg -----------------------------------
+fp = open(dirpath + '/Images/day_wise_drop_size_kg.png', 'rb')
+ds_kg = MIMEImage(fp.read())
+fp.close()
+
+ds_kg.add_header('Content-ID', '<ds_kg>')
+msgRoot.attach(ds_kg)
 
 # # Attached Logo ------------------------------
 fp = open(dirpath + './Images/AI TEAM.png', 'rb')

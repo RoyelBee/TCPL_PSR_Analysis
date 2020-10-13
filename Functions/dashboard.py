@@ -23,7 +23,7 @@ datetime_BD = datetime.now(tz_NY)
 time = datetime_BD.strftime("%I:%M %p")
 # print(datetime_BD)
 # print(time)
-img = Image.open("../Images/dash_structure.png")
+img = Image.open("./Images/dash_structure.png")
 title = ImageDraw.Draw(img)
 timestore = ImageDraw.Draw(img)
 name = ImageDraw.Draw(img)
@@ -57,8 +57,8 @@ drop_sizeW = ImageDraw.Draw(img)
 
 # # ---------------------------------------------
 
-Stencil_Regular = ImageFont.truetype("../font_styles/Lobster-Regular.ttf", 60, encoding="unic")
-Viga = ImageFont.truetype("../font_styles/Viga-Regular.ttf", 30, encoding="unic")
+Stencil_Regular = ImageFont.truetype("./font_styles/Lobster-Regular.ttf", 60, encoding="unic")
+Viga = ImageFont.truetype("./font_styles/Viga-Regular.ttf", 30, encoding="unic")
 
 Name = kpi.sr_name
 designation = kpi.designation
@@ -89,7 +89,7 @@ val_return_p = round((kpi.total_val_return/kpi.sales_val)*100, 2)
 
 visitV.text((70, 550), str(kpi.visit_rate) + '%' , (255, 255, 255), font=Viga)
 strike.text((320, 550), str(kpi.strike_rate) + '%' , (255, 255, 255), font=Viga)
-lpc.text((600, 550), str(kpi.lpc) + '%' , (255, 255, 255), font=Viga)
+lpc.text((600, 550), str(kpi.lpc) , (255, 255, 255), font=Viga)
 drop_size_val.text((850, 550), str(kpi.currency_converter(kpi.val_drop_size)) , (255, 255, 255), font=Viga)
 returnL.text((1120, 550),  str(val_return_p) +"%", (255, 255, 255), font=Viga)
 
@@ -112,8 +112,8 @@ trendValW.text((1100, 810),  str(kpi.w_trend_per) + "%"  , (255, 255, 255), font
 returnL.text((1120, 960),  str(kg_return_p) +"%", (255, 255, 255), font=Viga)
 visitW.text((70, 960),  str(kpi.visit_rate) +"%", (255, 255, 255), font=Viga)
 strike.text((320, 960), str(kpi.strike_rate) + '%' , (255, 255, 255), font=Viga)
-strike.text((600, 960), str(kpi.lpc) + '%' , (255, 255, 255), font=Viga)
+strike.text((600, 960), str(kpi.lpc) , (255, 255, 255), font=Viga)
 drop_sizeW.text((850, 960),  str(kpi.w_drop_size) +" Kg", (255, 255, 255), font=Viga)
 
 
-img.save('../Images/dashboard.png')
+img.save('./Images/dashboard.png')
