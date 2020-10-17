@@ -11,6 +11,16 @@ conn = db.connect('DRIVER={SQL Server};'
                   'UID=sa;'
                   'PWD=erp;')
 
+def thousand_converter(number):
+    number = int(number/1000)
+    number = format(number, ',')
+    number = number + 'K'
+    return number
+
+def comma_seperator(number):
+    number = format(int(number), ',')
+    return number
+
 df = pd.read_sql_query("""
         select t1.SRID,t1.SRName,t1.ReportingBoss, t1.Brand, t1.BrandName,t1.TargetVal,t2.SalesVal, t1.TargetQty,t2.SalesQty from
         (select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',-- B.SKUID ,
@@ -174,7 +184,7 @@ def day_wise_strike_rate():
     ax.set_xticks(ypos)
     ax.set_xticklabels(d.strike_days1, fontsize=14)
 
-    plt.title('02. Day wise Strike Days', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.title('04. Day wise Strike Rate', fontsize=16, fontweight='bold', color='#3e0a75')
     plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
     plt.ylabel('Strike Rate %', fontsize='14', color='black', fontweight='bold')
     plt.legend(['Strike Rate'], loc='upper right', fontsize='14')
@@ -201,7 +211,7 @@ def day_wise_visit_rate():
     ax.set_xticks(ypos)
     ax.set_xticklabels(d.visit_days, fontsize=14)
 
-    plt.title('01. Day wise Visit Rate', fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.title('03. Day wise Visit Rate', fontsize=16, fontweight='bold', color='#3e0a75')
     plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
     plt.ylabel('Visit Rate %', fontsize='14', color='black', fontweight='bold')
     plt.legend(['Visit Rate'], loc='upper right', fontsize='14')
@@ -246,16 +256,16 @@ def day_wise_drop_size_value():
     plt.ylim(0, math.ceil(max(d.drop_size_val) * 1.2))
     line = plt.plot(d.drop_size_val, color='#b100ff', linewidth='4',  marker='D', markerfacecolor="red")
 
-    # Show data point ----------------------------------------
+    # Show data point ---------------------------------------------------
     for i, v in enumerate(d.drop_size_val):
-        ax.text(i, v+10, "%d" %v, ha="center", fontsize='14')
+        ax.text(i, v+10, comma_seperator(v), ha="center", fontsize='14')
 
     ax.set_xticks(ypos)
     ax.set_xticklabels(d.drop_days, fontsize=14)
 
     plt.title('6. Day wise Drop Size Value', fontsize=16, fontweight='bold', color='#3e0a75')
     plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
-    plt.ylabel('Drop Size', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Drop Size Value', fontsize='14', color='black', fontweight='bold')
     plt.legend(['Drop Size'], loc='upper right', fontsize='14')
     plt.tight_layout()
     # plt.show()
@@ -274,7 +284,7 @@ def day_wise_drop_size_kg():
 
     # Show data point ----------------------------------------
     for i, v in enumerate(d.drop_size_kg):
-        ax.text(i, v+.1, str(round(v,2)), ha="center", fontsize='14')
+        ax.text(i, v+.1, str(round(v,2))+'Kg', ha="center", fontsize='14', rotation=10)
 
     ax.set_xticks(ypos)
     ax.set_xticklabels(d.drop_days, fontsize=14)
@@ -285,5 +295,57 @@ def day_wise_drop_size_kg():
     plt.legend(['Drop Size Kg'], loc='upper right', fontsize='14')
     plt.tight_layout()
     # plt.show()
-    print('Fig : Drop size kg generated')
+    print('Fig 07: Drop size kg generated')
     return plt.savefig('./Images/day_wise_drop_size_kg.png')
+
+
+def sales_kg_chart():
+    brand_list = d.brand_list
+    sales_kg_list = d.sales_kg_list
+    fig, ax = plt.subplots(figsize=(6.4, 4.8))
+
+    colors = ['yellow', 'orange', 'violet', '#DADADA', '#003f5c', '#665191', '#a05195', '#d45087', '#ff7c43', '#ffa600']
+    bars = plt.bar(brand_list, height=sales_kg_list, color=colors, width=.70)
+
+    def autolabel(bars):
+        for bar in bars:
+            height = int(bar.get_height())
+            ax.text(bar.get_x() + bar.get_width() / 2., .995 * height, str(height)+'Kg',
+                    ha='center', va='bottom', fontsize=12, fontweight='bold')
+
+    autolabel(bars)
+    plt.title("02. Brand wise Sales in KG", fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Brand', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Sales Kg', fontsize='14', color='black', fontweight='bold')
+
+    plt.rcParams['text.color'] = 'black'
+    plt.tight_layout()
+    # plt.show()
+    return plt.savefig('./Images/brand_wise_sales_val.png')
+
+
+def sales_val_chart():
+    brand_list = d.brand_list
+    sales_val_list = d.Sales_Val_list
+    fig, ax = plt.subplots(figsize=(6.4, 4.8))
+
+    colors = ['yellow', 'orange', 'violet', '#DADADA', '#003f5c', '#665191', '#a05195', '#d45087', '#ff7c43', '#ffa600']
+    bars = plt.bar(brand_list, height=sales_val_list, color=colors, width=.70)
+
+    def autolabel(bars):
+        for bar in bars:
+            height = int(bar.get_height())
+            ax.text(bar.get_x() + bar.get_width() / 2., .995 * height, thousand_converter(height),
+                    ha='center', va='bottom', fontsize=12, fontweight='bold')
+
+    autolabel(bars)
+    plt.title("01. Brand wise Sales in Value ", fontsize=16, fontweight='bold', color='#3e0a75')
+    plt.xlabel('Brand', fontsize='14', color='black', fontweight='bold')
+    plt.ylabel('Sales Value', fontsize='14', color='black', fontweight='bold')
+
+    plt.rcParams['text.color'] = 'black'
+    plt.tight_layout()
+    # plt.show()
+    return plt.savefig('./Images/brand_wise_sales_kg.png')
+
+

@@ -134,7 +134,8 @@ total_weight_return = sum(return_df.ReturnKg)
 # # ------------ SR Info with brand wise sales and target -------------------------
 # # -------------------------------------------------------------------------------
 
-profile_df = pd.read_sql_query(""" select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
+profile_df = pd.read_sql_query("""
+            select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
             t1.BrandName,t1.TargetVal,t2.SalesVal,T2.SalesKg, t1.TargetQty,t2.SalesQty from
             (select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',
             B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
@@ -147,7 +148,7 @@ profile_df = pd.read_sql_query(""" select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1
             from TargetDistributionItemBySR
             left join Hierarchy_SKU
             on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
-            where [TargetQty] >0 and YearMonth=202009
+            where [TargetQty] >0 and YearMonth=convert(varchar(6),DATEADD(MONTH, 0,getdate()), 112)
             group by SRID, ShortName,BrandName
             ) as B
             on A.SRID = B.SRID
@@ -163,7 +164,7 @@ profile_df = pd.read_sql_query(""" select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1
             (
             select * from SalesInvoiceItem) as item
             on sales.invoiceid=item.invoiceid) as a
-                        
+                                    
             left join
             (select * from Hierarchy_SKU) as SKu
             on a.skuid=sku.skuid
@@ -174,7 +175,8 @@ profile_df = pd.read_sql_query(""" select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1
             on t1.SRID=t2.SRID
             and t1.BrandName=t2.BrandName
             where T2.SRID = 22
-               """, conn)
+            
+                           """, conn)
 
 sr_name = profile_df.SRName.loc[0]
 reporting_boss = profile_df.ReportingBoss.loc[0]
@@ -182,6 +184,9 @@ total_brand = profile_df.Brand.count()
 designation = profile_df.SRDESIGNATION.loc[0]
 sales_val = int(sum(profile_df.SalesVal))
 sales_kg = int(sum(profile_df.SalesKg))
+brand_list = profile_df.BrandName.tolist()
+Sales_Val_list = profile_df['SalesVal'].tolist()
+sales_kg_list = profile_df['SalesKg'].tolist()
 
 # # -------- Trends Calculation ----------------
 date = datetime.datetime.now()
@@ -275,7 +280,7 @@ drop_size_kg = day_drop_size_df.DropSizeKg.tolist()
 
 # # --------- Day wise strike rate --------------------------------
 day_strike_df = pd.read_sql_query(""" 
-                select right(left(left(InvoiceDate, 12),6),2) as Date, 
+                 select right(left(left(InvoiceDate, 12),6),2) as Date, 
                 count(distinct SalesInvoices.CustomerID) as Effective,
                 count(distinct Customers.customerid) as TotalCustomer from
                 (select routeid,CustomerID
@@ -304,21 +309,22 @@ for i in range(len(sr)):
 
 # # ------------ Day wise Visit Rate -------------------------
 day_visit_rate_df = pd.read_sql_query(""" select right(left(left(OrderDate, 12),6),2) as Date, 
-            count(distinct SalesInvoices.CustomerID) as SalesCustomer,
-            count(distinct Customers.customerid) as VisitedCustomer from
-            (select routeid,CustomerID
-             from Customers) as Customers
-            right join 
-            (select routeid,customerid,OrderDate from SalesOrders
-            inner join 
-             SalesOrderItem
-            on SalesOrders.OrderID=SalesOrderItem.OrderID
-            where OrderDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22)
-             as SalesInvoices
-            on Customers.routeid = SalesInvoices.routeid
-            group by right(left(left(OrderDate, 12),6),2)
-             """, conn)
+                    count(distinct SalesInvoices.CustomerID) as SalesCustomer,
+                    count(distinct Customers.customerid) as VisitedCustomer from
+                    (select routeid,CustomerID
+                    from Customers) as Customers
+                    right join 
+                    (select routeid,customerid,OrderDate from SalesOrders
+                    inner join 
+                    SalesOrderItem
+                    on SalesOrders.OrderID=SalesOrderItem.OrderID
+                    where OrderDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                    and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22)
+                    as SalesInvoices
+                    on Customers.routeid = SalesInvoices.routeid
+                    group by right(left(left(OrderDate, 12),6),2)
+                    order by date asc 
+                                 """, conn)
 
 visit_days =  day_visit_rate_df.Date.tolist()
 SalesCustomer =  day_visit_rate_df.SalesCustomer

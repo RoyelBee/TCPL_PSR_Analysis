@@ -1,27 +1,80 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
+import pyodbc
 
-import Functions.kpi as d
 
-days = range(1, len(d.strike_days1) + 1, 1)
-ypos=np.arange(len(d.strike_days1))
-y = range(len(d.strike_rate))
+conn = pyodbc.connect('DRIVER={SQL Server};'
+                      'SERVER=10.168.2.168;'
+                      'DATABASE=TCPL_SECONDARY;'
+                      'UID=sa;'
+                      'PWD=erp;')
 
-fig, ax = plt.subplots(figsize=(12.81, 4.8))
-plt.ylim(0, 101, 10)
-line = plt.plot(d.strike_rate, color='green', linewidth='4',  marker='D', markerfacecolor="red")
+dataset = pd.read_sql_query(
+"""
+select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
+t1.BrandName,t1.TargetVal,t2.SalesVal,T2.SalesKg, t1.TargetQty,t2.SalesQty from
+(select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',
+B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
+from
+(select SRID, SRSNAME, ASENAME  from Hierarchy_EMP) as A
+left join
+(select BrandName,SRID,
+count(distinct Hierarchy_SKU.BrandID) as Brand,
+sum(TargetValue) as [TargetVal] , sum(TargetQty) as [TargetQty]
+from TargetDistributionItemBySR
+left join Hierarchy_SKU
+on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
+where [TargetQty] >0 and YearMonth=202009
+group by SRID, ShortName,BrandName
+) as B
+on A.SRID = B.SRID
+group by B.Brand, A.SRID, A.SRSNAME, A.ASENAME, BrandName )as T1
+left join
+(
+select a.srid,b.SRNAME,ltrim(rtrim(brandname)) as BrandName,b.SRDESIGNATION,
+SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal,  SUM(Quantity*Weight)/1000 as SalesKg from
+(select item.*,SRID from
+(select * from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)) as Sales
+inner join
+(
+select * from SalesInvoiceItem) as item
+on sales.invoiceid=item.invoiceid) as a
 
-# Show data point ----------------------------------------
-for i, v in enumerate(d.strike_rate):
-    ax.text(i, v+3, "%d" %v, ha="center", fontsize='14')
+left join
+(select * from Hierarchy_SKU) as SKu
+on a.skuid=sku.skuid
+left join
+(select * from Hierarchy_Emp) as b
+on a.srid=b.srid
+group by a.srid,b.SRNAME,ltrim(rtrim(brandname)) , b.SRDESIGNATION) as T2
+on t1.SRID=t2.SRID
+and t1.BrandName=t2.BrandName
+where T2.SRID = 22
+""", conn)
+x = dataset['BrandName'].tolist()
+y = dataset['SalesKg'].tolist()
+# con_y = dataset['SalesKg'].tolist()
+# y = list(map(int, con_y))
 
-ax.set_xticks(ypos)
-ax.set_xticklabels(d.strike_days1, fontsize=14)
 
-plt.title('03. Day wise Strike Days', fontsize=16, fontweight='bold', color='#3e0a75')
-plt.xlabel('Days', fontsize='14', color='black', fontweight='bold')
-plt.ylabel('Strike Rate %', fontsize='14', color='black', fontweight='bold')
-plt.legend(['Strike Rate'], loc='upper right', fontsize='14')
-# plt.show()
-plt.savefig('./Images/day_-wise_strike_rate.png')
+fig, ax = plt.subplots(figsize=(6.4, 4.8))
+
+colors = ['yellow', 'orange', 'violet', '#DADADA', '#003f5c', '#665191', '#a05195', '#d45087', '#ff7c43', '#ffa600']
+bars = plt.bar(x, height=y, color=colors, width=.4)
+
+for bar in bars:
+    yval = bar.get_height()
+    wval = bar.get_width()
+    data = str(round(yval, 2)) + " Kg"
+    plt.text(bar.get_x()+wval/16, yval * (100 / 100) + 5, data, fontweight='bold')
+
+plt.title("Brand wise Sales in KG", fontsize=16, fontweight='bold', color='#3e0a75')
+plt.xlabel('Brand', fontsize='14', color='black', fontweight='bold')
+plt.ylabel('Sales',fontsize='14', color='black', fontweight='bold')
+
+
+plt.rcParams['text.color'] = 'black'
+plt.tight_layout()
+plt.show()
+
