@@ -13,11 +13,11 @@ conn = db.connect('DRIVER={SQL Server};'
 def currency_converter(num):
     num_size = len(str(num))
     if num_size >= 8:
-        number = str(round((num / 10000000), 2)) + ' Cr'
+        number = str(round((num / 10000000), 2)) + 'Cr'
     elif num_size >= 7:
-        number = str(round(num / 1000000, 2)) + ' M'
+        number = str(round(num / 1000000, 2)) + 'M'
     elif num_size >= 4:
-        number = str(round(num / 1000, 2)) + ' K'
+        number = str(round(num / 1000, 2)) + 'K'
     else:
         number = num
     return number

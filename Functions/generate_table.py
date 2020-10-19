@@ -21,12 +21,24 @@ def generate_data():
                       'UID=sa;'
                       'PWD=erp;')
 
-    sku_df = pd.read_sql_query(""" select cast(item.skuid as int) as SKUID, item.ShortName as [SKU Name],
-            isnull(sum(targetv.TargetValue), 0) as [Value Target], isnull(sum(Quantity*InvoicePrice), 0) as [Sales Value],
+    sku_df = pd.read_sql_query(""" DECLARE @date date = GETDATE(); 
+            declare @current_day int = right(convert(varchar(8),getdate()-1, 112), 2)
             
-            isnull(sum(targetv.TargetQty*Quantity)/1000, 0) as [Volume Target],
-            isnull(sum(Quantity*Weight)/1000, 0) as [Sales Volume] from
+            select cast(item.skuid as int) as SKUID,
+             item.ShortName as [SKU Name],
+            cast(isnull(sum(targetv.TargetValue), 0) as int) as [Months Sales Target(Tk)],
+            cast((sum(targetv.TargetValue) /  cast(DAY(EOMONTH ( @date )) as int)) * @current_day as int) as [MTD Sales Target(Tk)],
             
+            cast(isnull(sum(Quantity*InvoicePrice), 0) as int) as [MTD Sales(Tk)],
+            (sum(Quantity*InvoicePrice) /((sum(targetv.TargetValue) /  cast(DAY(EOMONTH ( @date )) as int)) * @current_day ))*100 as [Value Achiv %] , 
+                        
+            cast(isnull(sum(targetv.TargetQty*Quantity)/1000, 0) as int) as [Months Volume Target(Kg)],
+            cast((((sum(targetv.TargetQty*Quantity)/1000)/ cast(DAY(EOMONTH ( @date )) as int)) * @current_day) as int) as [MTD Volume Target(Kg)],
+            
+            cast(isnull(sum(Quantity*Weight)/1000, 0) as int) as [Sales Volume(Kg)], 
+            ((sum(Quantity*Weight)/1000)/(((sum(targetv.TargetQty*Quantity)/1000)/ cast(DAY(EOMONTH ( @date )) as int)) * @current_day))*100 as [Volume Achiv %]
+             from
+                        
             (select sales.skuid,Quantity, InvoicePrice from
             (select * from SalesInvoices where SRID=22 and InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
             and convert(varchar(10),DATEADD(D,0,GETDATE()),126))as a
@@ -36,14 +48,14 @@ def generate_data():
             left join
             (select * from Hierarchy_SKU) as item
             on c.skuid=item.skuid
-            
+                        
             left join
             (select * from TargetDistributionItemBySR) as targetv
             on item.SKUID = targetv.SKUID
-            
+                        
             where item.skuid> 0
             group by item.skuid, item.ShortName
-            order by [Sales Value] desc """, conn)
+            --order by [Sales Value] desc """, conn)
 
     sku_df.to_excel('./Data/sku_wise_target_sales.xlsx', index=False)
     print('SKU wise target and sales data saved')
@@ -93,7 +105,19 @@ def get_SKU_wise_target_sales_Table():
             td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
 
         for j in range(5, 6):
+            td = td + "<td class=\"right\">" + str(round(sh.cell_value(i, j), 2))+'%' + "</td>\n"
+
+        for j in range(6, 7):
             td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+
+        for j in range(7, 8):
+            td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+
+        for j in range(8, 9):
+            td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+
+        for j in range(9, 10):
+            td = td + "<td class=\"right\">" + str(round(sh.cell_value(i, j), 2)) +'%'+ "</td>\n"
 
         td = td + "</tr>\n"
     html = th + td
