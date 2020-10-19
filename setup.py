@@ -19,17 +19,17 @@ import Functions.figures as fg
 import Functions.dashboard as dash
 
 dash.generate_dashboard()
-fg.sales_val_chart()
-fg.sales_kg_chart()
+# fg.sales_val_chart()
+# fg.sales_kg_chart()
 # fg.day_wise_visit_rate()
 # fg.day_wise_strike_rate()
 # fg.day_wise_lpc_rate()
 # fg.day_wise_drop_size_value()
 # # fg.day_wise_drop_size_kg()
-
-
+#
+#
 # # ---------------------------------------------------------
-
+#
 # # ----- Join Brands wise Sales Images ---------------------
 # brand_sales_val = Image.open(dirpath + "./Images/brand_wise_sales_kg.png")
 # widthx, heightx = brand_sales_val.size
@@ -69,11 +69,11 @@ fg.sales_kg_chart()
 # imageSize.save(dirpath + "./Images/day_wise_drop_size_val.png")
 #
 # # # ------Add border of day_wise_drop_size_val size  --------------------------------
-# day_wise_drop_size_kg = Image.open(dirpath + "./Images/day_wise_drop_size_kg.png")
-# widthx, heightx = day_wise_drop_size_kg.size
-# imageSize = Image.new('RGB', (1283, 481))
-# imageSize.paste(day_wise_drop_size_kg, (1, 0))
-# imageSize.save(dirpath + "./Images/day_wise_drop_size_kg.png")
+# # day_wise_drop_size_kg = Image.open(dirpath + "./Images/day_wise_drop_size_kg.png")
+# # widthx, heightx = day_wise_drop_size_kg.size
+# # imageSize = Image.new('RGB', (1283, 481))
+# # imageSize.paste(day_wise_drop_size_kg, (1, 0))
+# # imageSize.save(dirpath + "./Images/day_wise_drop_size_kg.png")
 #
 #
 # msgRoot = MIMEMultipart('related')
