@@ -61,13 +61,13 @@ def generate_dashboard():
     Viga = ImageFont.truetype("./font_styles/Viga-Regular.ttf", 40, encoding="unic")
     timef = ImageFont.truetype("./font_styles/Viga-Regular.ttf", 30, encoding="unic")
     Name = kpi.sr_name
-    designation = kpi.designation
+    # designation = kpi.designation
     reporting_boss = kpi.reporting_boss
 
     # # ------------ Profile section ---------------------------------
-    name.text((66, 15), Name, (255, 255, 255), font=Stencil_Regular)
+    name.text((10, 15), Name, (255, 255, 255), font=Stencil_Regular)
     # desig.text((66, 100), designation, (255, 255, 255), font=Viga)
-    boss.text((275, 162), reporting_boss, (255, 255, 255), font=timef)
+    boss.text((220, 158), reporting_boss, (255, 255, 255), font=timef)
     dateL.text((1050, 50), str(day), (29, 34, 105), font=timef)
     timeL.text((1060, 137), str(time), (29, 34, 105), font=timef)
 
@@ -80,16 +80,16 @@ def generate_dashboard():
 
     targetL.text((65, 400), str(target), (255, 255, 255), font=Viga)
     salesL.text((330, 400), str(sales), (255, 255, 255), font=Viga)
-    achivL.text((590, 400), str(achiv) + "%", (255, 255, 255), font=Viga)
+    achivL.text((580, 400), str(achiv) + "%", (255, 255, 255), font=Viga)
     trendVal.text((840, 400), str(trendval), (255, 255, 255), font=Viga)
     trendPer.text((1090, 400), str(kpi.trend_percent) + "%", (255, 255, 255), font=Viga)
 
     val_return_p = round((kpi.total_val_return / kpi.sales_val) * 100, 2)
 
-    visitV.text((70, 550), str(kpi.visit_rate) + '%', (21,69,122), font=Viga)
-    strike.text((320, 550), str(kpi.strike_rate) + '%', (21,69,122), font=Viga)
-    lpc.text((595, 550), str(kpi.lpc), (21,69,122), font=Viga)
-    drop_size_val.text((845, 550), str(kpi.currency_converter(kpi.val_drop_size)), (255, 255, 255), font=Viga)
+    visitV.text((70, 550), str(kpi.visit_rate) + '%', (255, 255, 255), font=Viga)
+    strike.text((320, 550), str(kpi.strike_rate) + '%', (255, 255, 255), font=Viga)
+    lpc.text((595, 550), str(kpi.lpc), (255, 255, 255), font=Viga)
+    drop_size_val.text((860, 550), str(kpi.currency_converter(kpi.val_drop_size)), (255, 255, 255), font=Viga)
     returnL.text((1090, 550), str(val_return_p) + "%", (255, 255, 255), font=Viga)
 
     # # --------- Weight wise KPI -------------------------------------------
@@ -98,17 +98,17 @@ def generate_dashboard():
     achivKg = round((kpi.sales_kg / mtd_weight_target) * 100, 2)
     kg_return_p = round((kpi.total_weight_return / kpi.sales_kg) * 100, 2)
 
-    wTargetL.text((65, 790), str(mtd_weight_target) + 'Kg', (255, 255, 255), font=Viga)
-    wSalesL.text((340, 790), str(WSalesKg) + 'Kg', (255, 255, 255), font=Viga)
-    achivL.text((590, 790), str(achivKg) + "%", (255, 255, 255), font=Viga)
-    trendW.text((840, 790), str(int(kpi.trend_val_kg)) + 'Kg', (255, 255, 255), font=Viga)
-    trendValW.text((1090, 790), str(kpi.w_trend_per) + "%", (255, 255, 255), font=Viga)
+    wTargetL.text((65, 790), str(mtd_weight_target) + ' Kg', (255, 255, 255), font=Viga)
+    wSalesL.text((320, 790), str(WSalesKg) + ' Kg', (255, 255, 255), font=Viga)
+    achivL.text((590, 790), str(achivKg) + " %", (255, 255, 255), font=Viga)
+    trendW.text((840, 790), str(int(kpi.trend_val_kg)) + ' Kg', (255, 255, 255), font=Viga)
+    trendValW.text((1090, 790), str(kpi.w_trend_per) + " %", (255, 255, 255), font=Viga)
 
-    visitW.text((75, 960), str(kpi.visit_rate) + "%", (19,58,233), font=Viga)
-    strike.text((335, 960), str(kpi.strike_rate) + '%', (19,58,233) , font=Viga)
-    strike.text((595, 960), str(kpi.lpc), (19,58,233), font=Viga)
-    drop_sizeW.text((860, 960), str(kpi.w_drop_size) + "Kg", (255, 255, 255), font=Viga)
-    returnL.text((1090, 960), str(kg_return_p) + "%", (255, 255, 255), font=Viga)
+    visitW.text((70, 960), str(kpi.visit_rate) + " %", (255, 255, 255), font=Viga)
+    strike.text((330, 960), str(kpi.strike_rate) + ' %', (255, 255, 255) , font=Viga)
+    strike.text((598, 960), str(kpi.lpc), (255, 255, 255), font=Viga)
+    drop_sizeW.text((860, 960), str(kpi.w_drop_size) + " Kg", (255, 255, 255), font=Viga)
+    returnL.text((1090, 960), str(kg_return_p) + " %", (255, 255, 255), font=Viga)
 
 
     return img.save('./Images/dashboard.png')

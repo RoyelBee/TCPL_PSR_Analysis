@@ -13,11 +13,11 @@ conn = db.connect('DRIVER={SQL Server};'
 def currency_converter(num):
     num_size = len(str(num))
     if num_size >= 8:
-        number = str(round((num / 10000000), 2)) + 'Cr'
+        number = str(round((num / 10000000), 2)) + ' Cr'
     elif num_size >= 7:
-        number = str(round(num / 1000000, 2)) + 'M'
+        number = str(round(num / 1000000, 2)) + ' M'
     elif num_size >= 4:
-        number = str(round(num / 1000, 2)) + 'K'
+        number = str(int(num / 1000)) + ' K'
     else:
         number = num
     return number
@@ -50,7 +50,7 @@ return_df = pd.read_sql_query(""" select isnull(sum(Quantity*InvoicePrice),0) as
             left join Hierarchy_SKU
             on MarketReturnItem.SKUID = Hierarchy_SKU.SKUID
             where SRID=22 and MarketReturnDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-            and  convert(varchar(10),DATEADD(D,0,GETDATE()),126)
+            and  convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)
                                     """, conn)
 total_val_return = sum(return_df.ReturnVal)
 total_weight_return = sum(return_df.ReturnKg)
@@ -171,7 +171,7 @@ effective_cust = int(effective_cust_df.EffectiveCust)
 strike_rate = round((effective_cust / total_cust) * 100, 2)
 # # -------------------------- Visit Rate ----------------------------------
 
-visit_cust_df = pd.read_sql_query("""select count(distinct CustomerID) as VisitCust
+visit_cust_df = pd.read_sql_query(""" select count(distinct CustomerID) as VisitCust
                 from SalesOrders 
                 where srid = 22 and OrderDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
                 and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
@@ -270,6 +270,7 @@ sale.InvoiceID) as LPC from
 lpc_days = day_wise_lpc.Date.tolist()
 lpc_rate = day_wise_lpc.LPC.tolist()
 lpc = round(sum(day_wise_lpc.LPC) / len(lpc_rate), 2)
+print('lpc rate ',len(lpc_rate) )
 
 
 # # # -------- Cumulative Target  and sales --------------------------------------

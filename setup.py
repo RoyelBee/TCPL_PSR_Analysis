@@ -111,7 +111,6 @@ msgAlternative.attach(msgText)
 # # Mail Body
 
 msgText = MIMEText("""
-            <h3 style="color:red;"> Attention Check the Design. Data will be mis-matched. </h3>
              <img src="cid:dash" height='1000', width='1280'> <br>
              <img src="cid:brand" > <br>
              <img src="cid:visit" > <br>

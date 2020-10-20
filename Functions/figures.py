@@ -24,7 +24,7 @@ def day_wise_strike_rate():
 
     fig, ax = plt.subplots(figsize=(12.81, 4.8))
     plt.ylim(0, 101, 10)
-    plt.plot(d.day_strike_rate, color='green', linewidth='4', marker='D', markerfacecolor="red")
+    plt.plot(d.day_strike_rate, color='green', linewidth='3', marker='D', markerfacecolor="red")
 
     # Show data point ----------------------------------------
     for i, v in enumerate(d.day_strike_rate):
@@ -51,7 +51,7 @@ def day_wise_visit_rate():
 
     fig, ax = plt.subplots(figsize=(12.81, 4.8))
     plt.ylim(0, 101, 10)
-    plt.plot(d.day_visit_rate, color='#007cff', linewidth='4', marker='D', markerfacecolor="#fcff00")
+    plt.plot(d.day_visit_rate, color='#007cff', linewidth='3', marker='D', markerfacecolor="#fcff00")
 
     # Show data point ----------------------------------------
     for i, v in enumerate(d.day_visit_rate):
@@ -77,7 +77,7 @@ def day_wise_lpc_rate():
 
     fig, ax = plt.subplots(figsize=(12.81, 4.8))
     plt.ylim(0, max(d.lpc_rate) + 2, 1)
-    plt.plot(d.lpc_rate, color='#ff8300', linewidth='4', marker='D', markerfacecolor="#3633ff")
+    plt.plot(d.lpc_rate, color='#ff8300', linewidth='3', marker='D', markerfacecolor="#3633ff")
 
     # Show data point ----------------------------------------
     for i, v in enumerate(d.lpc_rate):
@@ -104,7 +104,7 @@ def day_wise_drop_size_value():
 
     fig, ax = plt.subplots(figsize=(12.81, 4.8))
     plt.ylim(0, math.ceil(max(d.drop_size_val) * 1.3))
-    line = plt.plot(d.drop_size_val, color='#b100ff', linewidth='4', marker='D', markerfacecolor="red")
+    line = plt.plot(d.drop_size_val, color='#b100ff', linewidth='3', marker='D', markerfacecolor="red")
 
     # Show data point ---------------------------------------------------
     for i, v in enumerate(d.drop_size_val):
@@ -131,7 +131,7 @@ def day_wise_drop_size_kg():
 
     fig, ax = plt.subplots(figsize=(12.81, 4.8))
     plt.ylim(0, math.ceil(max(d.drop_size_kg) * 1.2))
-    plt.plot(d.drop_size_kg, color='#b100ff', linewidth='4', marker='D', markerfacecolor="red")
+    plt.plot(d.drop_size_kg, color='#b100ff', linewidth='3', marker='D', markerfacecolor="red")
 
     # Show data point ----------------------------------------
     for i, v in enumerate(d.drop_size_kg):
@@ -157,7 +157,7 @@ def sales_kg_chart():
 
     colors = ['yellow', 'orange', 'violet', '#DADADA', '#003f5c', '#665191', '#a05195', '#d45087', '#ff7c43', '#ffa600']
     bars = plt.bar(brand_list, height=sales_kg_list, color='#13c9e9', width=.70)
-    plt.plot(d.branch_mtd_target_kg_list, color='#b100ff', linewidth='4', marker='D', markerfacecolor="red")
+    plt.plot(d.branch_mtd_target_kg_list, color='#b100ff', linewidth='3', marker='D', markerfacecolor="red")
 
     def autolabel(bars):
         for bar in bars:
@@ -193,7 +193,7 @@ def sales_val_chart():
 
     colors = ['yellow', 'orange', 'violet', '#DADADA', '#003f5c', '#665191', '#a05195', '#d45087', '#ff7c43', '#ffa600']
     bars = plt.bar(brand_list, height=sales_val_list, color='orange', width=.70)
-    plt.plot(d.branch_mtd_target_list, color='#b100ff', linewidth='4', marker='D', markerfacecolor="red")
+    plt.plot(d.branch_mtd_target_list, color='#b100ff', linewidth='3', marker='D', markerfacecolor="red")
     plt.ylim(0, math.ceil(max(d.branch_mtd_target_list) * 1.2))
 
     def autolabel(bars):
