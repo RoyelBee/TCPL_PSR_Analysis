@@ -7,7 +7,7 @@ import pytz
 
 # # --------- Import local files -----------------
 import Functions.kpi as kpi
-
+import math
 def generate_dashboard():
     date = datetime.today()
     day = str(date.day) + '/' + str(date.month) + '/' + str(date.year)
@@ -77,19 +77,20 @@ def generate_dashboard():
     sales = kpi.currency_converter(kpi.sales_val)
     achiv = round((kpi.sales_val / mtd_target) * 100, 2)
     trendval = kpi.currency_converter(int(kpi.trend_val))
+    trend_percent = round((kpi.trend_val * 100)/kpi.total_val_target, 2)
 
     targetL.text((65, 400), str(target), (255, 255, 255), font=Viga)
     salesL.text((330, 400), str(sales), (255, 255, 255), font=Viga)
     achivL.text((580, 400), str(achiv) + "%", (255, 255, 255), font=Viga)
     trendVal.text((840, 400), str(trendval), (255, 255, 255), font=Viga)
-    trendPer.text((1090, 400), str(kpi.trend_percent) + "%", (255, 255, 255), font=Viga)
+    trendPer.text((1090, 400), str(trend_percent) + "%", (255, 255, 255), font=Viga)
 
     val_return_p = round((kpi.total_val_return / kpi.sales_val) * 100, 2)
 
     visitV.text((70, 550), str(kpi.visit_rate) + '%', (255, 255, 255), font=Viga)
     strike.text((320, 550), str(kpi.strike_rate) + '%', (255, 255, 255), font=Viga)
     lpc.text((595, 550), str(kpi.lpc), (255, 255, 255), font=Viga)
-    drop_size_val.text((860, 550), str(kpi.currency_converter(kpi.val_drop_size)), (255, 255, 255), font=Viga)
+    drop_size_val.text((860, 550), str( round((kpi.val_drop_size/1000), 2)) + 'K', (255, 255, 255), font=Viga)
     returnL.text((1090, 550), str(val_return_p) + "%", (255, 255, 255), font=Viga)
 
     # # --------- Weight wise KPI -------------------------------------------
@@ -101,7 +102,7 @@ def generate_dashboard():
     wTargetL.text((65, 790), str(mtd_weight_target) + ' Kg', (255, 255, 255), font=Viga)
     wSalesL.text((320, 790), str(WSalesKg) + ' Kg', (255, 255, 255), font=Viga)
     achivL.text((590, 790), str(achivKg) + " %", (255, 255, 255), font=Viga)
-    trendW.text((840, 790), str(int(kpi.trend_val_kg)) + ' Kg', (255, 255, 255), font=Viga)
+    trendW.text((840, 790), str(int(kpi.trend_w_kg)) + ' Kg', (255, 255, 255), font=Viga)
     trendValW.text((1090, 790), str(kpi.w_trend_per) + " %", (255, 255, 255), font=Viga)
 
     visitW.text((70, 960), str(kpi.visit_rate) + " %", (255, 255, 255), font=Viga)

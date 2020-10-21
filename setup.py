@@ -78,9 +78,9 @@ imageSize.save(dirpath + "./Images/day_wise_drop_size_val.png")
 
 msgRoot = MIMEMultipart('related')
 me = 'erp-bi.service@transcombd.com'
-to = ['rejaul.islam@transcombd.com', '']
+to = ['', ''] ## al.sahriar@transcombd.com
 cc = ['', '']
-bcc = ['', '']
+bcc = ['rejaul.islam@transcombd.com', '']
 
 # to = ['biswas@transcombd.com']
 # cc = ['yakub@transcombd.com', 'tawhid@transcombd.com', 'zubair@transcombd.com']

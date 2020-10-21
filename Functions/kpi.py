@@ -22,10 +22,12 @@ def currency_converter(num):
         number = num
     return number
 
+
 date = datetime.datetime.now()
 current_day = int(date.strftime("%d")) - 1
 days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m"))))
-
+print('Current day = ', current_day)
+print('Days in month', days_in_month)
 # # -------- Total value and Weight Target  -------------------------------------
 # # -----------------------------------------------------------------------------
 target_df = pd.read_sql_query(""" select  isnull(sum(targetvalue), 0) as TargetVal,
@@ -55,7 +57,6 @@ return_df = pd.read_sql_query(""" select isnull(sum(Quantity*InvoicePrice),0) as
 total_val_return = sum(return_df.ReturnVal)
 total_weight_return = sum(return_df.ReturnKg)
 
-
 profile_df = pd.read_sql_query("""
             select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
             t1.BrandName,t1.TargetVal, t1.TargetKG, t2.SalesVal,T2.SalesKg, t1.TargetQty,t2.SalesQty from
@@ -81,7 +82,7 @@ profile_df = pd.read_sql_query("""
             SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal,  SUM(Quantity*Weight)/1000 as SalesKg from
             (select item.*,SRID from
             (select * from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)) as Sales
+            and convert(varchar(10),DATEADD(D,0,GETDATE()-2),126)) as Sales
             inner join
             (
             select * from SalesInvoiceItem) as item
@@ -112,14 +113,13 @@ target_kg_list = profile_df.TargetKG.tolist()
 
 branch_mtd_target_list = []
 for i in range(len(target_list)):
-    d = (target_list[i]/days_in_month)*current_day
+    d = (target_list[i] / days_in_month) * current_day
     branch_mtd_target_list.append(d)
 
 branch_mtd_target_kg_list = []
 for i in range(len(target_list)):
-    kg = (target_kg_list[i]/days_in_month)*current_day
+    kg = (target_kg_list[i] / days_in_month) * current_day
     branch_mtd_target_kg_list.append(kg)
-
 
 Sales_Val_list = profile_df['SalesVal'].tolist()
 sales_kg_list = profile_df['SalesKg'].tolist()
@@ -131,16 +131,17 @@ mtd_avg_sales = sales_val / int(current_day)
 each_day_target = total_val_target / int(days_in_month)
 each_day_sales = sales_val / int(current_day)
 
-trend_percent = round((sales_val * 100) / total_val_target, 2)
+
 trend_val = round((each_day_sales * days_in_month), 2)
 
 # # ----------- Trend Weight ---------------------------------
 
-w_trend_per = round((sales_kg * 100 / total_weight_target), 2)
+# w_trend_per = round((sales_kg * days_in_month * 100) / (total_weight_target * current_day), 2)
 # print('Weight trend percent = ', w_trend_per)
 
 each_day_sales_kg = sales_kg / int(current_day)
-trend_val_kg = round((each_day_sales_kg * days_in_month), 2)
+trend_w_kg = round((each_day_sales_kg * days_in_month), 2)
+w_trend_per = round((trend_w_kg/total_weight_target)*100, 2)
 # print('Trend in Kg = ', trend_val_kg)
 
 # # -------- Invoice count ----------------------------------
@@ -156,15 +157,18 @@ w_drop_size = int(sales_kg / total_invoice)
 
 # # ------------------- Strike Rate ---------------------------
 total_cust_df = pd.read_sql_query(""" select count(customerid) as TotalCustomer from Customers
-where routeid in (select distinct routeid from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22) """, conn)
+                where routeid in (select distinct routeid from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22) """, conn)
 
 total_cust = int(total_cust_df.TotalCustomer)
 
-effective_cust_df = pd.read_sql_query(""" select count(distinct CustomerID) as EffectiveCust 
-            from SalesInvoices 
-            where srid=22 and InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-            and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) """, conn)
+effective_cust_df = pd.read_sql_query(""" select count(distinct CustomerID) as EffectiveCust  from 
+                (select * from SalesInvoices
+                where srid=22 and InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
+                and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)) as sale
+                inner  join 
+                (select * from SalesInvoiceItem) as item
+                on sale.invoiceid=item.invoiceid """, conn)
 
 effective_cust = int(effective_cust_df.EffectiveCust)
 
@@ -239,7 +243,7 @@ day_visit_rate_df = pd.read_sql_query(""" select right(left(left(OrderDate, 12),
                     SalesOrderItem
                     on SalesOrders.OrderID=SalesOrderItem.OrderID
                     where OrderDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-                    and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126) and srid=22)
+                    and convert(varchar(10),DATEADD(D,0,GETDATE()),126) and srid=22)
                     as SalesInvoices
                     on Customers.routeid = SalesInvoices.routeid
                     group by right(left(left(OrderDate, 12),6),2)
@@ -270,8 +274,7 @@ sale.InvoiceID) as LPC from
 lpc_days = day_wise_lpc.Date.tolist()
 lpc_rate = day_wise_lpc.LPC.tolist()
 lpc = round(sum(day_wise_lpc.LPC) / len(lpc_rate), 2)
-print('lpc rate ',len(lpc_rate) )
-
+print('lpc rate ', len(lpc_rate))
 
 # # # -------- Cumulative Target  and sales --------------------------------------
 # # # ----------------------------------------------------------------------------
