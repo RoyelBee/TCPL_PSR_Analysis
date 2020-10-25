@@ -15,25 +15,28 @@ import path
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
 # # ------ Generate all Figures ----------------------------
+#### ----- ------------Please change SR id in kpi list -----
+# # --------------------------------------------------------
+
 import Functions.figures as fg
 import Functions.dashboard as dash
 
 dash.generate_dashboard()
+
 fg.sales_val_chart()
 fg.sales_kg_chart()
 fg.day_wise_visit_rate()
 fg.day_wise_strike_rate()
 fg.day_wise_lpc_rate()
 fg.day_wise_drop_size_value()
+
 # fg.day_wise_drop_size_kg()
 
 
-# ---------------------------------------------------------
-
-# ----- Join Brands wise Sales Images ---------------------
-brand_sales_val = Image.open(dirpath + "./Images/brand_wise_sales_kg.png")
+#----- Join Brands wise Sales Images ---------------------
+brand_sales_val = Image.open(dirpath + "./Images/brand_wise_sales_val.png")
 widthx, heightx = brand_sales_val.size
-brand_sales_kg = Image.open(dirpath + "./Images/brand_wise_sales_val.png")
+brand_sales_kg = Image.open(dirpath + "./Images/brand_wise_sales_kg.png")
 
 imageSize = Image.new('RGB', (1283, 481))
 imageSize.paste(brand_sales_val, (1, 0))
@@ -202,5 +205,5 @@ print('\n------------------')
 print('Sending Mail')
 server.sendmail(me, recipient, msgRoot.as_string())
 print('Mail Send')
-print('-------------------')
+print('-----------------')
 server.close()
