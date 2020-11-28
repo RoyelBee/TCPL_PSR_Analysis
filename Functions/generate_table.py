@@ -17,10 +17,10 @@ import numpy as np
 
 def generate_data():
     conn = db.connect('DRIVER={SQL Server};'
-                      'SERVER=10.168.2.168;'
+                      'SERVER=--------------;'
                       'DATABASE=TCPL_SECONDARY;'
-                      'UID=sa;'
-                      'PWD=erp;')
+                      'UID=--;'
+                      'PWD=---;')
 
     sku_df = pd.read_sql_query(""" 
             DECLARE @date date = GETDATE(); 
