@@ -3,11 +3,6 @@ import pandas as pd
 import datetime
 from calendar import monthrange
 
-conn = db.connect('DRIVER={SQL Server};'
-                  'SERVER=10.168.2.168;'
-                  'DATABASE=TCPL_SECONDARY;'
-                  'UID=sa;'
-                  'PWD=erp;')
 
 
 def currency_converter(num):
