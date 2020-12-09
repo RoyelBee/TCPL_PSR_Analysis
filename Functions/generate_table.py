@@ -17,10 +17,10 @@ import numpy as np
 
 def generate_data():
     conn = db.connect('DRIVER={SQL Server};'
-                      'SERVER=10.168.2.168;'
-                      'DATABASE=TCPL_SECONDARY;'
-                      'UID=sa;'
-                      'PWD=erp;')
+                  'SERVER=10.168.71.36;'
+                  'DATABASE=TCPL_SECONDARY;'
+                  'UID=ruser;'
+                  'PWD=user@123;')
 
     sku_df = pd.read_sql_query(""" 
             DECLARE @date date = GETDATE(); 
@@ -106,28 +106,28 @@ def get_SKU_wise_target_sales_Table():
         td = td + "</td>"
 
         for j in range(0, 1):
-            td = td + "<td class=\"right\">" + str(int(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\">" + str(sh.cell_value(i, j)) + "</td>\n"
 
         for j in range(1, 2):
             td = td + "<td class=\"unit\">" + str(sh.cell_value(i, j)) + "</td>\n"
 
         for j in range(2, 3):
-            td = td + "<td class=\"right\"  >" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+            td = td + "<td class=\"right\"  >" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(3, 4):
-            td = td + "<td class=\"right\" >" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+            td = td + "<td class=\"right\" >" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(4, 5):
-            td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(5, 6):
             td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(6, 7):
-            td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(7, 8):
-            td = td + "<td class=\"right\">" + comma_seperator(str(int(sh.cell_value(i, j)))) + "</td>\n"
+            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(8, 9):
             td = td + "<td class=\"right\">" + str(round(sh.cell_value(i, j), 2))+'%'+ "</td>\n"

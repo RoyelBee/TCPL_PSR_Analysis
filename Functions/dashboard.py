@@ -1,19 +1,18 @@
 from PIL import Image, ImageDraw, ImageFont
-import pandas as pd
-import pyodbc as db
 from datetime import datetime
 import datetime as dd
 import pytz
 
 # # --------- Import local files -----------------
 import Functions.kpi as kpi
-import math
+
+
 def generate_dashboard():
-    date = datetime.today()
-    day = str(date.day) + '/' + str(date.month) + '/' + str(date.year)
+    # date = datetime.today()
+    # day = str(date.day) + '/' + str(date.month) + '/' + str(date.year)
     tz_NY = pytz.timezone('Asia/Dhaka')
     datetime_BD = datetime.now(tz_NY)
-    time = datetime_BD.strftime("%I:%M %p")
+    # time = datetime_BD.strftime("%I:%M %p")
     date = datetime.today()
     x = dd.datetime.now()
     day = str(date.day) + '-' + str(x.strftime("%b")) + '-' + str(date.year)
@@ -77,7 +76,7 @@ def generate_dashboard():
     if (kpi.trend_val == 0 & kpi.total_val_target == 0):
         trend_percent = 0
     else:
-        trend_percent = round((kpi.trend_val/kpi.total_val_target) * 100, 2)
+        trend_percent = round((kpi.trend_val / kpi.total_val_target) * 100, 2)
 
     targetL.text((70, 400), str(target), (255, 255, 255), font=Viga)
     salesL.text((330, 400), str(sales), (255, 255, 255), font=Viga)
@@ -93,7 +92,7 @@ def generate_dashboard():
     visitV.text((70, 550), str(kpi.visit_rate) + '%', (255, 255, 255), font=Viga)
     strike.text((330, 550), str(kpi.strike_rate) + '%', (255, 255, 255), font=Viga)
     lpc.text((605, 550), str(kpi.lpc), (255, 255, 255), font=Viga)
-    drop_size_val.text((850, 550), str( round((kpi.val_drop_size/1000), 2)) + 'K', (255, 255, 255), font=Viga)
+    drop_size_val.text((850, 550), str(round((kpi.val_drop_size / 1000), 2)) + 'K', (255, 255, 255), font=Viga)
     returnL.text((1090, 550), str(val_return_p) + "%", (255, 255, 255), font=Viga)
 
     # # --------- Weight wise KPI -------------------------------------------
@@ -116,10 +115,9 @@ def generate_dashboard():
     trendValW.text((1090, 790), str(kpi.w_trend_per) + "%", (255, 255, 255), font=Viga)
 
     visitW.text((70, 960), str(kpi.visit_rate) + "%", (255, 255, 255), font=Viga)
-    strike.text((330, 960), str(kpi.strike_rate) + '%', (255, 255, 255) , font=Viga)
+    strike.text((330, 960), str(kpi.strike_rate) + '%', (255, 255, 255), font=Viga)
     strike.text((605, 960), str(kpi.lpc), (255, 255, 255), font=Viga)
     drop_sizeW.text((850, 960), str(kpi.w_drop_size) + "Kg", (255, 255, 255), font=Viga)
     returnL.text((1090, 960), str(kg_return_p) + "%", (255, 255, 255), font=Viga)
-
 
     return img.save('./Images/dashboard.png')

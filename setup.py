@@ -15,7 +15,7 @@ import path
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
 # # ------ Generate all Figures ----------------------------
-#### ----- ------------Please change SR id in kpi list -----
+# ### ---- ------------Please change SR id in kpi list -----
 # # --------------------------------------------------------
 
 import Functions.figures as fg
@@ -33,7 +33,7 @@ fg.day_wise_drop_size_value()
 # fg.day_wise_drop_size_kg()
 
 
-#----- Join Brands wise Sales Images ---------------------
+# ----- Join Brands wise Sales Images ---------------------
 brand_sales_val = Image.open(dirpath + "./Images/brand_wise_sales_val.png")
 widthx, heightx = brand_sales_val.size
 brand_sales_kg = Image.open(dirpath + "./Images/brand_wise_sales_kg.png")
@@ -81,7 +81,7 @@ imageSize.save(dirpath + "./Images/day_wise_drop_size_val.png")
 
 msgRoot = MIMEMultipart('related')
 me = 'erp-bi.service@transcombd.com'
-to = ['', ''] ## al.sahriar@transcombd.com
+to = ['', '']  ## al.sahriar@transcombd.com
 cc = ['', '']
 bcc = ['rejaul.islam@transcombd.com', '']
 
@@ -96,7 +96,7 @@ today = str(date.day) + '-' + str(date.strftime("%b")) + '-' + str(date.year) + 
 today1 = str(date.day) + '-' + str(date.strftime("%b")) + '-' + str(date.year)
 
 # # ------------ Group email --------------------
-subject = "ERP Members Leave and Late Analysis " + today
+subject = "TCPL - Secondary Analysis " + today
 email_server_host = 'mail.transcombd.com'
 port = 25
 
@@ -132,6 +132,7 @@ msgAlternative.attach(msgText)
 # Attached top 10 leave
 part = MIMEBase('application', "octet-stream")
 file_location = path.get_directory() + './Data/sku_wise_target_sales.xlsx'
+
 filename = os.path.basename(file_location)
 attachment = open(file_location, "rb")
 part = MIMEBase('application', 'octet-stream')
@@ -140,7 +141,7 @@ encoders.encode_base64(part)
 part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
 msgRoot.attach(part)
 
-# # -------- Dashboard ----------------------------
+# # -------- Dashboard --------------------------------------
 fp = open(dirpath + './Images/dashboard.png', 'rb')
 dash = MIMEImage(fp.read())
 fp.close()
@@ -148,7 +149,7 @@ fp.close()
 dash.add_header('Content-ID', '<dash>')
 msgRoot.attach(dash)
 
-# # -------- Brand wise sales chart ---------------
+# # -------- Brand wise sales chart -------------------------
 fp = open(dirpath + './Images/brand_sales.png', 'rb')
 brand = MIMEImage(fp.read())
 fp.close()
@@ -164,14 +165,13 @@ fp.close()
 visit.add_header('Content-ID', '<visit>')
 msgRoot.attach(visit)
 
-## ------- Day wise Strike rate ----------------------------
+# # ------- Day wise Strike rate ----------------------------
 fp = open(dirpath + '/Images/day_wise_strike_rate.png', 'rb')
 strike = MIMEImage(fp.read())
 fp.close()
 
 strike.add_header('Content-ID', '<strike>')
 msgRoot.attach(strike)
-
 
 # # ------ Day wise LPC -----------------------------------
 fp = open(dirpath + '/Images/day_wise_lpc_rate.png', 'rb')
@@ -181,7 +181,7 @@ fp.close()
 lpc.add_header('Content-ID', '<lpc>')
 msgRoot.attach(lpc)
 
-# # ------ Day wise Drop Size Value -----------------------------------
+# # ------ Day wise Drop Size Value -------------------------
 fp = open(dirpath + '/Images/day_wise_drop_size_val.png', 'rb')
 ds_val = MIMEImage(fp.read())
 fp.close()
@@ -189,8 +189,7 @@ fp.close()
 ds_val.add_header('Content-ID', '<ds_val>')
 msgRoot.attach(ds_val)
 
-
-# # Attached Logo ------------------------------
+# # Attached Logo -------------------------------------------
 fp = open(dirpath + './Images/AI TEAM.png', 'rb')
 logo = MIMEImage(fp.read())
 fp.close()
@@ -198,10 +197,10 @@ fp.close()
 logo.add_header('Content-ID', '<logo>')
 msgRoot.attach(logo)
 
-# #----------- Finally send mail and close server connection -----
+# #-------Finally send mail and close server connection -----
 server = smtplib.SMTP(email_server_host, port)
 server.ehlo()
-print('\n------------------')
+print('------------------')
 print('Sending Mail')
 server.sendmail(me, recipient, msgRoot.as_string())
 print('Mail Send')
