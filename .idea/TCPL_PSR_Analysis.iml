@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/env" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.8 (TCPL_PSR_Analysis)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="SKF_Final_outstanding_report" />
+    <orderEntry type="module" module-name="ERP_monthly_emp_reports" />
+    <orderEntry type="module" module-name="Data-Analysis-for-Alexa-Flash-Briefing" />
+    <orderEntry type="module" module-name="Data-Analysis-for-Alexa-Flash-Briefing" />
+    <orderEntry type="module" module-name="Machine Learning" />
+    <orderEntry type="module" module-name="Best-on-Python" />
+    <orderEntry type="module" module-name="GPM_new" />
+  </component>
+</module>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Best-on-Python/.idea/Best-on-Python.iml" filepath="$PROJECT_DIR$/../Best-on-Python/.idea/Best-on-Python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Data-Analysis-for-Alexa-Flash-Briefing/.idea/Data-Analysis-for-Alexa-Flash-Briefing.iml" filepath="$PROJECT_DIR$/../Data-Analysis-for-Alexa-Flash-Briefing/.idea/Data-Analysis-for-Alexa-Flash-Briefing.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ERP_monthly_emp_reports/.idea/ERP_monthly_emp_reports.iml" filepath="$PROJECT_DIR$/../ERP_monthly_emp_reports/.idea/ERP_monthly_emp_reports.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../GPM_new/.idea/GPM_new.iml" filepath="$PROJECT_DIR$/../GPM_new/.idea/GPM_new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Machine_Learning/.idea/Machine Learning.iml" filepath="$PROJECT_DIR$/../Machine_Learning/.idea/Machine Learning.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SKF_Outstanding_Report/.idea/SKF_Final_outstanding_report.iml" filepath="$PROJECT_DIR$/../SKF_Outstanding_Report/.idea/SKF_Final_outstanding_report.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/TCPL_PSR_Analysis.iml" filepath="$PROJECT_DIR$/.idea/TCPL_PSR_Analysis.iml" />
+    </modules>
+  </component>
+</project>
