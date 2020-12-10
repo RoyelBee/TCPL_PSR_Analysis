@@ -73,6 +73,11 @@ visited_cust = vc.VisitCust(22)
 
 visit_rate = round((visited_cust / total_cust) * 100, 2)
 
+vl = ((SalesCustomer / VisitedCustomer) * 100).tolist()
+day_visit_rate = []
+for i in range(len(vl)):
+    day_visit_rate.append(int(vl[i]))
+
 strike_days = strike.StrikeDays(22)[0]
 effective_strike = strike.StrikeDays(22)[1]
 totalCustomer_strike = strike.StrikeDays(22)[2]
@@ -113,6 +118,7 @@ else:
 import Functions.dashboard as dash
 import Functions.sales_figure as salesf
 import Functions.sales_kg_figure as saleskg
+import Functions.visit_rate_figure as visit_fig
 
 dash.generate_dashboard(sr_name, reporting_boss, trg_val, sales_val, trg_kg, sales_kg, days_in_month,
                         current_day, trend_val, return_val, return_kg, visit_rate, strike_rate, lpc, val_drop_size,
@@ -120,8 +126,8 @@ dash.generate_dashboard(sr_name, reporting_boss, trg_val, sales_val, trg_kg, sal
 
 salesf.sales_val_chart(brand_list, sales_val_list, branch_mtd_target_list)
 saleskg.sales_kg_chart(brand_list, sales_kg_list, branch_mtd_target_kg_list)
+visit_fig.day_wise_visit_rate(visit_days, day_visit_rate)
 
-fg.day_wise_visit_rate()
 # fg.day_wise_strike_rate()
 # fg.day_wise_lpc_rate()
 # fg.day_wise_drop_size_value()
