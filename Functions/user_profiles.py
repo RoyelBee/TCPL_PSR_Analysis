@@ -52,9 +52,9 @@ def UserProfile(id):
     total_brand = profile_df.Brand.count()
     designation = profile_df.SRDESIGNATION.loc[0]
     sales_val_list = profile_df.SalesVal.tolist()
-    sales_kg = int(sum(profile_df.SalesKg))
+    sales_kg_list = profile_df.SalesKg.tolist()
     brand_list = profile_df.BrandName.tolist()
     target_list = profile_df.TargetVal.tolist()
     target_kg_list = profile_df.TargetKG.tolist()
 
-    return sr_name, reporting_boss, total_brand, designation, sales_val_list, sales_kg, brand_list, target_list, target_kg_list
+    return sr_name, reporting_boss, total_brand, designation, sales_val_list, sales_kg_list, brand_list, target_list, target_kg_list

@@ -36,7 +36,7 @@ import Functions.invoice as inv
 import Functions.drop_size as ds
 
 trg_val = trg.TotalTarget(22)[0]
-trg_kg = trg.TotalTarget(22)[1]
+trg_kg = int(trg.TotalTarget(22)[1])
 
 return_val = re.TotalReturn(22)[0]
 return_kg = re.TotalReturn(22)[1]
@@ -47,7 +47,8 @@ total_brand = up.UserProfile(22)[2]
 designation = up.UserProfile(22)[3]
 sales_val_list = up.UserProfile(22)[4]
 sales_val = sum(sales_val_list)
-sales_kg = up.UserProfile(22)[5]
+sales_kg_list = up.UserProfile(22)[5]
+sales_kg = int(sum(sales_kg_list))
 brand_list = up.UserProfile(22)[6]
 target_list = up.UserProfile(22)[7]
 target_kg_list = up.UserProfile(22)[8]
@@ -110,16 +111,17 @@ else:
 
 # # ------------------------------- KPI Data generation -------------------------------------------------
 import Functions.dashboard as dash
+import Functions.sales_figure as salesf
+import Functions.sales_kg_figure as saleskg
 
 dash.generate_dashboard(sr_name, reporting_boss, trg_val, sales_val, trg_kg, sales_kg, days_in_month,
                         current_day, trend_val, return_val, return_kg, visit_rate, strike_rate, lpc, val_drop_size,
                         w_drop_size, trend_w_kg, w_trend_per)
 
-import Functions.sales_figure as salesf
 salesf.sales_val_chart(brand_list, sales_val_list, branch_mtd_target_list)
+saleskg.sales_kg_chart(brand_list, sales_kg_list, branch_mtd_target_kg_list)
 
-fg.sales_kg_chart()
-# fg.day_wise_visit_rate()
+fg.day_wise_visit_rate()
 # fg.day_wise_strike_rate()
 # fg.day_wise_lpc_rate()
 # fg.day_wise_drop_size_value()

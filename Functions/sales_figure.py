@@ -28,6 +28,6 @@ def sales_val_chart(brand_list, Sales_Val_list, branch_mtd_target_list):
 
     plt.rcParams['text.color'] = 'black'
     plt.tight_layout()
-    plt.show()
-    # print('Fig 01: Brand wise sales in Value generated')
-    # return plt.savefig('./Images/brand_wise_sales_val.png')
+    # plt.show()
+    print('Fig 01: Brand wise sales in Value generated')
+    return plt.savefig('./Images/brand_wise_sales_val.png')
