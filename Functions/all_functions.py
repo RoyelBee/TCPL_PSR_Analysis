@@ -25,3 +25,14 @@ def currency_converter(num):
     else:
         number = num
     return number
+
+def thousand_converter(number):
+    number = int(number / 1000)
+    number = format(number, ',')
+    number = number + 'K'
+    return number
+
+
+def comma_seperator(number):
+    number = format(int(number), ',')
+    return number

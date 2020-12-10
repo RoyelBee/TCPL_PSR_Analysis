@@ -1,26 +1,26 @@
-# import Functions.targets as trg
+# # import Functions.targets as trg
+# #
+# # trg_val = trg.TotalTarget(22)[0]
+# # trg_kh = trg.TotalTarget(22)[1]
+# #
+# # import Functions.returns as re
+# #
+# # return_val = re.TotalReturn(22)[0]
+# # return_kg = re.TotalReturn(22)[1]
 #
-# trg_val = trg.TotalTarget(22)[0]
-# trg_kh = trg.TotalTarget(22)[1]
+# import Functions.user_profiles as up
 #
-# import Functions.returns as re
+# sr_name = up.UserProfile(22)[0]
+# reporting_boss = up.UserProfile(22)[1]
+# total_brand = up.UserProfile(22)[2]
+# designation = up.UserProfile(22)[3]
+# sales_val = up.UserProfile(22)[4]
+# sales_kg = up.UserProfile(22)[5]
+# brand_list = up.UserProfile(22)[6]
+# target_list = up.UserProfile(22)[7]
+# target_kg_list = up.UserProfile(22)[8]
 #
-# return_val = re.TotalReturn(22)[0]
-# return_kg = re.TotalReturn(22)[1]
-
-import Functions.user_profiles as up
-
-sr_name = up.UserProfile(22)[0]
-reporting_boss = up.UserProfile(22)[1]
-total_brand = up.UserProfile(22)[2]
-designation = up.UserProfile(22)[3]
-sales_val = up.UserProfile(22)[4]
-sales_kg = up.UserProfile(22)[5]
-brand_list = up.UserProfile(22)[6]
-target_list = up.UserProfile(22)[7]
-target_kg_list = up.UserProfile(22)[8]
-
-print(sales_val)
+# print(sales_val)
 
 # import Functions.visit_rates as vr
 #
@@ -55,4 +55,5 @@ print(sales_val)
 # drop_days = ds.DayWiseDropSize(22)[0]
 # drop_size_val = ds.DayWiseDropSize(22)[1]
 # drop_size_kg = ds.DayWiseDropSize(22)[2]
-#
+
+

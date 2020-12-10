@@ -203,8 +203,8 @@ def sales_kg_chart():
     return plt.savefig('./Images/brand_wise_sales_kg.png')
 
 
-def sales_val_chart():
-    brand_list = d.brand_list
+def sales_val_chart(brand_list, ):
+
     sales_val_list = d.Sales_Val_list
     fig, ax = plt.subplots(figsize=(6.4, 4.8))
 

@@ -3,7 +3,13 @@ from datetime import datetime
 import datetime as dd
 import pytz
 
-# # --------- Import local files -----------------
+date = datetime.today()
+x = dd.datetime.now()
+day = str(date.day) + '-' + str(x.strftime("%b")) + '-' + str(date.year)
+tz_NY = pytz.timezone('Asia/Dhaka')
+datetime_BD = datetime.now(tz_NY)
+time = datetime_BD.strftime("%I:%M %p")
+# # ------------------------------------ Import local files ------------------------------------------------------------
 import Functions.kpi as kpi
 import Functions.all_functions as fn
 
@@ -11,18 +17,6 @@ import Functions.all_functions as fn
 def generate_dashboard(sr_name, report_boss, targetVal, salesVal, targetKg, SalesKg, days_in_month, current_day,
                        trend_val, return_val, return_kg, visit_rate, strike_rate, lpc_val, val_drop_size, w_drop_size,
                        trend_w_kg, w_trend_per):
-    # date = datetime.today()
-    # day = str(date.day) + '/' + str(date.month) + '/' + str(date.year)
-    tz_NY = pytz.timezone('Asia/Dhaka')
-    datetime_BD = datetime.now(tz_NY)
-    # time = datetime_BD.strftime("%I:%M %p")
-    date = datetime.today()
-    x = dd.datetime.now()
-    day = str(date.day) + '-' + str(x.strftime("%b")) + '-' + str(date.year)
-    tz_NY = pytz.timezone('Asia/Dhaka')
-    datetime_BD = datetime.now(tz_NY)
-    time = datetime_BD.strftime("%I:%M %p")
-
     img = Image.open("./Images/dash_structure.png")
     name = ImageDraw.Draw(img)
     boss = ImageDraw.Draw(img)
@@ -54,12 +48,10 @@ def generate_dashboard(sr_name, report_boss, targetVal, salesVal, targetKg, Sale
     Stencil_Regular = ImageFont.truetype("./font_styles/Lobster-Regular.ttf", 60, encoding="unic")
     Viga = ImageFont.truetype("./font_styles/Viga-Regular.ttf", 40, encoding="unic")
     timef = ImageFont.truetype("./font_styles/Viga-Regular.ttf", 30, encoding="unic")
-    Name = sr_name
-    reporting_boss = report_boss
 
-    # # ------------ Profile section ---------------------------------
-    name.text((10, 15), Name, (255, 255, 255), font=Stencil_Regular)
-    boss.text((220, 158), reporting_boss, (255, 255, 255), font=timef)
+    # # ------------ Profile section ----------------------------------
+    name.text((10, 15), sr_name, (255, 255, 255), font=Stencil_Regular)
+    boss.text((220, 158), report_boss, (255, 255, 255), font=timef)
     dateL.text((1050, 50), str(day), (29, 34, 105), font=timef)
     timeL.text((1060, 137), str(time), (29, 34, 105), font=timef)
 
