@@ -36,3 +36,14 @@ def thousand_converter(number):
 def comma_seperator(number):
     number = format(int(number), ',')
     return number
+
+def master_comma_seperator(value):
+    if (len(value) > 6):
+        return str(value[0:len(value) - 6] + "," + value[len(value) - 6:len(value) - 3] + ","
+                   + value[len(value) - 3:len(value)])
+    elif (len(value) > 3):
+        return str(value[0:len(value) - 3] + "," + value[len(value) - 3:len(value)])
+    elif (len(value) > 0):
+        return value
+    else:
+        return "-"

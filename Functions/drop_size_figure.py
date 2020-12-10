@@ -28,6 +28,6 @@ def day_wise_drop_size_value(drop_days,drop_size_val):
     plt.ylabel('Drop Size Value', fontsize='14', color='black', fontweight='bold')
     plt.legend(['Drop Size', 'Average'], loc='best', fontsize='14')
     plt.tight_layout()
-    plt.show()
+    # plt.show()
     print('Fig 06: Day wise value drop size generated')
-    # return plt.savefig('./Images/day_wise_drop_size_val.png')
+    return plt.savefig('./Images/day_wise_drop_size_val.png')

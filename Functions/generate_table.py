@@ -1,27 +1,10 @@
-import pandas as pd
-import openpyxl
-import pyodbc as db
 
-import os
-import smtplib
-from _datetime import datetime
-from email import encoders
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
 import pandas as pd
-import Functions.generate_data as gdata
 import xlrd
 import numpy as np
+import Functions.all_functions as fn
 
-def generate_data():
-    conn = db.connect('DRIVER={SQL Server};'
-                  'SERVER=10.168.71.36;'
-                  'DATABASE=TCPL_SECONDARY;'
-                  'UID=ruser;'
-                  'PWD=user@123;')
-
+def generate_data(id):
     sku_df = pd.read_sql_query(""" 
             DECLARE @date date = GETDATE(); 
             declare @current_day int = right(convert(varchar(8),getdate(), 112), 2)
@@ -54,7 +37,7 @@ def generate_data():
             isnull(sum((Quantity-FreeQty)*Weight)/1000, 0) as [MTD Sales(Kg)] from 
             (selecT Item.*,Srid from 
             (select * from SalesInvoices where InvoiceDate between convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-            and convert(varchar(10),DATEADD(D,0,GETDATE()),126) and srid=22) as Sale
+            and convert(varchar(10),DATEADD(D,0,GETDATE()),126) and srid like ?) as Sale
             inner join 
             (select * from SalesInvoiceItem) as Item
             on sale.InvoiceID=item.InvoiceID) as salesitem
@@ -66,7 +49,7 @@ def generate_data():
             on sku.SKUID=salesitem.SKUID
             group by srname,sku.skuid,salesitem.SRID) as srItnamesale
             on srItnameTarget.srid=srItnamesale.srid
-            and srItnameTarget.Item=srItnamesale.Item """, conn)
+            and srItnameTarget.Item=srItnamesale.Item """, fn.conn, params={id})
 
     sku_df['Achiv%(Tk)'] = (sku_df['MTD Sales(Tk)'] / sku_df['MTD Target(Tk)'] * 100).replace([np.inf], 0)
     sku_df['Achiv%(Kg)'] = (sku_df['MTD Sales(Kg)'] / sku_df['MTD Target(Kg)'] * 100).replace([np.inf], 0)
@@ -74,21 +57,7 @@ def generate_data():
     sku_df.to_excel('./Data/sku_wise_target_sales.xlsx', index=False)
     print('SKU wise target and sales data saved')
 
-def comma_seperator(value):
-    if (len(value) > 6):
-        return str(value[0:len(value) - 6] + "," + value[len(value) - 6:len(value) - 3] + ","
-                   + value[len(value) - 3:len(value)])
-    elif (len(value) > 3):
-        return str(value[0:len(value) - 3] + "," + value[len(value) - 3:len(value)])
-    elif (len(value) > 0):
-        return value
-    else:
-        return "-"
-
-
-
 def get_SKU_wise_target_sales_Table():
-    generate_data()
     wb = xlrd.open_workbook('./Data/sku_wise_target_sales.xlsx')
     sh = wb.sheet_by_name('Sheet1')
     th = ""
@@ -112,22 +81,22 @@ def get_SKU_wise_target_sales_Table():
             td = td + "<td class=\"unit\">" + str(sh.cell_value(i, j)) + "</td>\n"
 
         for j in range(2, 3):
-            td = td + "<td class=\"right\"  >" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\"  >" + fn.master_comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(3, 4):
-            td = td + "<td class=\"right\" >" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\" >" + fn.master_comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(4, 5):
-            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\">" + fn.master_comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(5, 6):
-            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\">" + fn.master_comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(6, 7):
-            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\">" + fn.master_comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(7, 8):
-            td = td + "<td class=\"right\">" + comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
+            td = td + "<td class=\"right\">" + fn.master_comma_seperator(str(sh.cell_value(i, j))) + "</td>\n"
 
         for j in range(8, 9):
             td = td + "<td class=\"right\">" + str(round(sh.cell_value(i, j), 2))+'%'+ "</td>\n"

@@ -10,7 +10,6 @@ tz_NY = pytz.timezone('Asia/Dhaka')
 datetime_BD = datetime.now(tz_NY)
 time = datetime_BD.strftime("%I:%M %p")
 # # ------------------------------------ Import local files ------------------------------------------------------------
-import Functions.kpi as kpi
 import Functions.all_functions as fn
 
 
@@ -90,7 +89,7 @@ def generate_dashboard(sr_name, report_boss, targetVal, salesVal, targetKg, Sale
     returnL.text((1090, 550), str(val_return_p) + "%", (255, 255, 255), font=Viga)
 
     # # --------- Weight wise KPI -------------------------------------------
-    mtd_weight_target = int((targetKg / fn.days_in_month) * kpi.current_day)
+    mtd_weight_target = int((targetKg / fn.days_in_month) * fn.current_day)
 
     if (targetKg == 0 & SalesKg == 0):
         achivKg = 0
