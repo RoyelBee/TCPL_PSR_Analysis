@@ -120,7 +120,7 @@ import Functions.sales_figure as salesf
 import Functions.sales_kg_figure as saleskg
 import Functions.visit_rate_figure as visit_fig
 import Functions.strike_rate_figure as strike_rate_fig
-
+import Functions.drop_size_figure as drop_size_fig
 # dash.generate_dashboard(sr_name, reporting_boss, trg_val, sales_val, trg_kg, sales_kg, days_in_month,
 #                         current_day, trend_val, return_val, return_kg, visit_rate, strike_rate, lpc, val_drop_size,
 #                         w_drop_size, trend_w_kg, w_trend_per)
@@ -128,11 +128,10 @@ import Functions.strike_rate_figure as strike_rate_fig
 # salesf.sales_val_chart(brand_list, sales_val_list, branch_mtd_target_list)
 # saleskg.sales_kg_chart(brand_list, sales_kg_list, branch_mtd_target_kg_list)
 # visit_fig.day_wise_visit_rate(visit_days, day_visit_rate)
-
-strike_rate_fig.day_wise_strike_rate(strike_days, day_strike_rate)
+# strike_rate_fig.day_wise_strike_rate(strike_days, day_strike_rate)
 
 # fg.day_wise_lpc_rate()
-# fg.day_wise_drop_size_value()
+drop_size_fig.day_wise_drop_size_value(drop_days,drop_size_val)
 
 # fg.day_wise_drop_size_kg()
 

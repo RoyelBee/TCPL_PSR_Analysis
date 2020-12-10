@@ -29,5 +29,5 @@ def day_wise_strike_rate(strike_days, day_strike_rate):
     plt.legend(['Strike Rate', 'Average'], loc='best', fontsize='14')
     plt.tight_layout()
     # plt.show()
-    # print('Fig 04: Day wise strike rate generated')
+    print('Fig 04: Day wise strike rate generated')
     return plt.savefig('./Images/day_wise_strike_rate.png')
