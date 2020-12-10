@@ -27,8 +27,8 @@ date = datetime.datetime.now()
 current_day = int(date.strftime("%d")) - 1
 days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m"))))
 
-# print('Current day = ', current_day)
-# print('Days in month', days_in_month)
+print('Current day = ', current_day)
+print('Days in month', days_in_month)
 
 # # -------- Total value and Weight Target  -------------------------------------
 # # -----------------------------------------------------------------------------
@@ -37,10 +37,8 @@ days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m")
 # 73, 92, 93, 94, 95, 97, 98, 99, 100, 101, 102, 104, 105, 106, 107, 108, 109, 111, 113, 114, 115, 116, 117, 118, 119,
 # 120, 121, 122, 127, 130, 132, 138]
 
-id = ['26']
-for i in range(len(id)):
-
-    id = id[i]
+# id = ['26']
+def generate_all_kpi_data(id):
     target_df = pd.read_sql_query(""" select  isnull(sum(targetvalue), 0) as TargetVal,
                 isnull(sum((targetqty)*Weight)/1000, 0) as TargetKg
                 from TargetDistributionItemBySR
@@ -51,6 +49,7 @@ for i in range(len(id)):
 
     total_val_target = int(target_df.TargetVal)
     total_weight_target = int(target_df.TargetKg)
+
     # print('Target for id', id, 'Target = ', total_val_target )
 
     # # ------------------- Total Returns in Kg and Values ---------------------------
@@ -100,7 +99,7 @@ for i in range(len(id)):
                 (
                 select * from SalesInvoiceItem) as item
                 on sales.invoiceid=item.invoiceid) as a
-    
+
                 left join
                 (select * from Hierarchy_SKU) as SKu
                 on a.skuid=sku.skuid
@@ -111,7 +110,7 @@ for i in range(len(id)):
                 on t1.SRID=t2.SRID
                 and t1.BrandName=t2.BrandName
                 where T2.SRID like ?
-    
+
                 """, conn, params={id})
 
     sr_name = profile_df.SRName.loc[0]
@@ -152,7 +151,7 @@ for i in range(len(id)):
 
     each_day_sales_kg = sales_kg / int(current_day)
     trend_w_kg = round((each_day_sales_kg * days_in_month), 2)
-
+    w_trend_per = 0
     if total_weight_target == 0:
         w_trend_per = 0
     else:
@@ -208,7 +207,6 @@ for i in range(len(id)):
                     from SalesInvoices
                     left join SalesInvoiceItem
                     on SalesInvoices.InvoiceID = SalesInvoiceItem.InvoiceID
-    
                     left join Hierarchy_SKU
                     on SalesInvoiceItem.SKUID = Hierarchy_SKU.SKUID
                     where SRID like ? and
@@ -243,6 +241,7 @@ for i in range(len(id)):
     strike_days1 = day_strike_df.Date.tolist()
     effective_strike = day_strike_df.Effective
     totalCustomer_strike = day_strike_df.TotalCustomer
+
     sr = ((effective_strike / totalCustomer_strike) * 100).tolist()
     day_strike_rate = []
     for i in range(len(sr)):

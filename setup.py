@@ -11,24 +11,117 @@ import Functions.generate_table as tbl
 from PIL import Image, ImageDraw, ImageFont
 import xlrd
 import path
+import datetime
+from calendar import monthrange
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
+date = datetime.datetime.now()
+current_day = int(date.strftime("%d")) - 1
+days_in_month = max(monthrange(int(date.strftime("%Y")), int(date.strftime("%m"))))
+
 # # ------ Generate all Figures ----------------------------
-# ### ---- ------------Please change SR id in kpi list -----
+# ### ----------------Please change SR id in kpi list ------
 # # --------------------------------------------------------
 
 import Functions.figures as fg
+import Functions.targets as trg
+
+trg_val = trg.TotalTarget(22)[0]
+trg_kg = trg.TotalTarget(22)[1]
+
+import Functions.returns as re
+
+return_val = re.TotalReturn(22)[0]
+return_kg = re.TotalReturn(22)[1]
+
+import Functions.user_profiles as up
+
+sr_name = up.UserProfile(22)[0]
+reporting_boss = up.UserProfile(22)[1]
+total_brand = up.UserProfile(22)[2]
+designation = up.UserProfile(22)[3]
+sales_val = up.UserProfile(22)[4]
+
+sales_kg = up.UserProfile(22)[5]
+brand_list = up.UserProfile(22)[6]
+target_list = up.UserProfile(22)[7]
+target_kg_list = up.UserProfile(22)[8]
+
+import Functions.visit_rates as vr
+
+visit_days = vr.VisitRate(22)[0]
+SalesCustomer = vr.VisitRate(22)[1]
+VisitedCustomer = vr.VisitRate(22)[2]
+
+import Functions.customers as vc
+
+total_cust = vc.TotalCust(22)
+effective_cust = vc.EffectiveCust(22)
+visited_cust = vc.VisitCust(22)
+
+visit_rate = round((visited_cust / total_cust) * 100, 2)
+
+import Functions.strike_days as strike
+
+strike_days = strike.StrikeDays(22)[0]
+effective_strike = strike.StrikeDays(22)[1]
+totalCustomer_strike = strike.StrikeDays(22)[2]
+
+strike_rate = round((effective_cust / total_cust) * 100, 2)
+
+sr = ((effective_strike / totalCustomer_strike) * 100).tolist()
+day_strike_rate = []
+for i in range(len(sr)):
+    day_strike_rate.append(int(sr[i]))
+
+import Functions.lpcs as lpc
+
+lpc_days = lpc.DayWiseLPC(22)[0]
+lpc_rate = lpc.DayWiseLPC(22)[1]
+lpc = round(sum(lpc_days) / len(lpc_rate), 2)
+
+import Functions.invoice as inv
+
+total_invoice = inv.Total_Invoice(22)
+
+import Functions.drop_size as ds
+
+drop_days = ds.DayWiseDropSize(22)[0]
+drop_size_val = ds.DayWiseDropSize(22)[1]
+drop_size_kg = ds.DayWiseDropSize(22)[2]
+
+val_drop_size = int(sales_val / total_invoice)
+w_drop_size = round(sales_kg / total_invoice, 2)
+
+each_day_sales = sales_val / int(current_day)
+each_day_sales_kg = sales_kg / int(current_day)
+
+trend_val = round((each_day_sales * days_in_month), 2)
+trend_w_kg = round((each_day_sales_kg * days_in_month), 2)
+
+w_trend_per = 0
+if trg_kg == 0:
+    w_trend_per = 0
+else:
+    w_trend_per = round((trend_w_kg / trg_kg) * 100, 2)
+
 import Functions.dashboard as dash
 
-dash.generate_dashboard()
 
-fg.sales_val_chart()
-fg.sales_kg_chart()
-fg.day_wise_visit_rate()
-fg.day_wise_strike_rate()
-fg.day_wise_lpc_rate()
-fg.day_wise_drop_size_value()
+
+# # -- KPI Data generation ---------------------------------
+
+dash.generate_dashboard(sr_name, reporting_boss, trg_val, sales_val, trg_kg, sales_kg, days_in_month,
+                        current_day, trend_val, return_val, return_kg, visit_rate, strike_rate, lpc, val_drop_size,
+                        w_drop_size, trend_w_kg, w_trend_per)
+
+# fg.sales_val_chart()
+# fg.sales_kg_chart()
+# fg.day_wise_visit_rate()
+# fg.day_wise_strike_rate()
+# fg.day_wise_lpc_rate()
+# fg.day_wise_drop_size_value()
 
 # fg.day_wise_drop_size_kg()
 
@@ -90,7 +183,7 @@ bcc = ['rejaul.islam@transcombd.com', '']
 # bcc = ['aftab.uddin@transcombd.com', 'rejaul.islam@transcombd.com', 'din.mohammad@transcombd.com']
 
 recipient = to + cc + bcc
-
+from datetime import datetime
 date = datetime.today()
 today = str(date.day) + '-' + str(date.strftime("%b")) + '-' + str(date.year) + ' ' + date.strftime("%I:%M %p")
 today1 = str(date.day) + '-' + str(date.strftime("%b")) + '-' + str(date.year)

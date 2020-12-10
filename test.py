@@ -1,80 +1,58 @@
-import matplotlib.pyplot as plt
-import pandas as pd
-import pyodbc
+# import Functions.targets as trg
+#
+# trg_val = trg.TotalTarget(22)[0]
+# trg_kh = trg.TotalTarget(22)[1]
+#
+# import Functions.returns as re
+#
+# return_val = re.TotalReturn(22)[0]
+# return_kg = re.TotalReturn(22)[1]
 
+import Functions.user_profiles as up
 
-conn = pyodbc.connect('DRIVER={SQL Server};'
-                      'SERVER=10.168.2.168;'
-                      'DATABASE=TCPL_SECONDARY;'
-                      'UID=sa;'
-                      'PWD=erp;')
+sr_name = up.UserProfile(22)[0]
+reporting_boss = up.UserProfile(22)[1]
+total_brand = up.UserProfile(22)[2]
+designation = up.UserProfile(22)[3]
+sales_val = up.UserProfile(22)[4]
+sales_kg = up.UserProfile(22)[5]
+brand_list = up.UserProfile(22)[6]
+target_list = up.UserProfile(22)[7]
+target_kg_list = up.UserProfile(22)[8]
 
-dataset = pd.read_sql_query(
-"""
-select t1.SRID,t1.SRName,t2.SRDESIGNATION, t1.ReportingBoss, t1.Brand, 
-t1.BrandName,t1.TargetVal,t2.SalesVal,T2.SalesKg, t1.TargetQty,t2.SalesQty from
-(select A.SRID, SRSNAME as SRName, ASENAME as 'ReportingBoss',
-B.Brand as Brand, BrandName, sum(TargetVal) as TargetVal , sum(TargetQty) as TargetQty
-from
-(select SRID, SRSNAME, ASENAME  from Hierarchy_EMP) as A
-left join
-(select BrandName,SRID,
-count(distinct Hierarchy_SKU.BrandID) as Brand,
-sum(TargetValue) as [TargetVal] , sum(TargetQty) as [TargetQty]
-from TargetDistributionItemBySR
-left join Hierarchy_SKU
-on TargetDistributionItemBySR.SKUID = Hierarchy_SKU.SKUID
-where [TargetQty] >0 and YearMonth=202009
-group by SRID, ShortName,BrandName
-) as B
-on A.SRID = B.SRID
-group by B.Brand, A.SRID, A.SRSNAME, A.ASENAME, BrandName )as T1
-left join
-(
-select a.srid,b.SRNAME,ltrim(rtrim(brandname)) as BrandName,b.SRDESIGNATION,
-SUM(Quantity) as SalesQty, sum(Quantity*InvoicePrice) as SalesVal,  SUM(Quantity*Weight)/1000 as SalesKg from
-(select item.*,SRID from
-(select * from SalesInvoices where InvoiceDate between  convert(varchar(10),DATEADD(mm, DATEDIFF(mm, 0, GETDATE()), 0),126)
-and convert(varchar(10),DATEADD(D,0,GETDATE()-1),126)) as Sales
-inner join
-(
-select * from SalesInvoiceItem) as item
-on sales.invoiceid=item.invoiceid) as a
+print(sales_val)
 
-left join
-(select * from Hierarchy_SKU) as SKu
-on a.skuid=sku.skuid
-left join
-(select * from Hierarchy_Emp) as b
-on a.srid=b.srid
-group by a.srid,b.SRNAME,ltrim(rtrim(brandname)) , b.SRDESIGNATION) as T2
-on t1.SRID=t2.SRID
-and t1.BrandName=t2.BrandName
-where T2.SRID = 22
-""", conn)
-x = dataset['BrandName'].tolist()
-y = dataset['SalesKg'].tolist()
-# con_y = dataset['SalesKg'].tolist()
-# y = list(map(int, con_y))
-
-
-fig, ax = plt.subplots(figsize=(6.4, 4.8))
-
-colors = ['yellow', 'orange', 'violet', '#DADADA', '#003f5c', '#665191', '#a05195', '#d45087', '#ff7c43', '#ffa600']
-bars = plt.bar(x, height=y, color=colors, width=.4)
-
-for bar in bars:
-    yval = bar.get_height()
-    wval = bar.get_width()
-    data = str(round(yval, 2)) + " Kg"
-    plt.text(bar.get_x()+wval/16, yval * (100 / 100) + 5, data, fontweight='bold')
-
-plt.title("Brand wise Sales in KG", fontsize=16, fontweight='bold', color='#3e0a75')
-plt.xlabel('Brand', fontsize='14', color='black', fontweight='bold')
-plt.ylabel('Sales',fontsize='14', color='black', fontweight='bold')
-
-
-plt.rcParams['text.color'] = 'black'
-plt.tight_layout()
-plt.show()
-
+# import Functions.visit_rates as vr
+#
+# visit_days = vr.VisitRate(22)[0]
+# SalesCustomer = vr.VisitRate(22)[1]
+# VisitedCustomer = vr.VisitRate(22)[2]
+#
+# import Functions.customers as vc
+#
+# total_cust = vc.TotalCust(22)
+# effective_cust = vc.EffectiveCust(22)
+# visited_cust = vc.VisitCust(22)
+#
+# import Functions.strike_days as strike
+#
+# strike_days = strike.StrikeDays(22)[0]
+# effective_strike = strike.StrikeDays(22)[1]
+# totalCustomer_strike = strike.StrikeDays(22)[2]
+#
+# sr = ((effective_strike / totalCustomer_strike) * 100).tolist()
+# day_strike_rate = []
+# for i in range(len(sr)):
+#     day_strike_rate.append(int(sr[i]))
+#
+# import Functions.lpcs as lpc
+#
+# lpc_days = lpc.DayWiseLPC(22)[0]
+# lpc_rate = lpc.DayWiseLPC(22)[1]
+#
+# import Functions.drop_size as ds
+#
+# drop_days = ds.DayWiseDropSize(22)[0]
+# drop_size_val = ds.DayWiseDropSize(22)[1]
+# drop_size_kg = ds.DayWiseDropSize(22)[2]
+#
